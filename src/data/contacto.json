@@ -1,0 +1,27 @@
+{
+  "empresa": "MarkaLab",
+  "tagline": "Marketing and Sales Consulting",
+  "telefono": "+52 55 8100 1579",
+  "telefonoHref": "tel:+525581001579",
+  "email": "comercial@markalab.com.mx",
+  "emailHref": "mailto:comercial@markalab.com.mx",
+  "sitioWeb": "www.markalab.com.mx",
+  "direccion": "Jardines del Pedregal, CDMX",
+  "redes": {
+    "instagram": "#",
+    "facebook": "#",
+    "linkedin": "#",
+    "youtube": "#"
+  },
+  "retosComerciales": [
+    "Necesito más clientes potenciales (leads)",
+    "Mi proceso de ventas es ineficiente",
+    "No tengo presencia digital sólida",
+    "Quiero reducir el costo de adquisición",
+    "Necesito fidelizar más a mis clientes actuales",
+    "Quiero implementar automatizaciones de ventas",
+    "Mi equipo de ventas necesita capacitación",
+    "Quiero expandirme a nuevos mercados",
+    "Otro reto"
+  ]
+}

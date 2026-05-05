@@ -1,0 +1,49 @@
+{
+  "metricas": [
+    {
+      "id": "clientes",
+      "prefijo": "+",
+      "valor": 3,
+      "sufijo": "x",
+      "titulo": "Clientes Potenciales",
+      "descripcion": "Leads con intención real de compra que entran a tu proceso comercial.",
+      "color": "#E8621A"
+    },
+    {
+      "id": "oportunidades",
+      "prefijo": "+",
+      "valor": 250,
+      "sufijo": "%",
+      "titulo": "Oportunidades de Venta",
+      "descripcion": "Incrementamos el volumen y calidad del pipeline comercial.",
+      "color": "#1E2A4A"
+    },
+    {
+      "id": "eficiencia",
+      "prefijo": "",
+      "valor": 80,
+      "sufijo": "%",
+      "titulo": "Procesos más Eficientes",
+      "descripcion": "Reducimos fricción en seguimiento y cierre de clientes.",
+      "color": "#4A7CC7"
+    },
+    {
+      "id": "crecimiento",
+      "prefijo": "",
+      "valor": 100,
+      "sufijo": "%",
+      "titulo": "Crecimiento Constante",
+      "descripcion": "Creamos sistemas que generan resultados sostenibles en el tiempo.",
+      "color": "#E8621A"
+    },
+    {
+      "id": "costo",
+      "prefijo": "-",
+      "valor": 40,
+      "sufijo": "%",
+      "titulo": "Costo de Adquisición",
+      "descripcion": "Optimizamos inversión comercial para mejorar el retorno (ROI).",
+      "color": "#1E2A4A"
+    }
+  ]
+}
