@@ -63,11 +63,11 @@ const herramientas = [
   },
 ]
 
-const nivelesInfo: Record<number, { ancho: string; label: string }> = {
-  1: { ancho: 'w-full', label: 'Tope del funnel' },
-  2: { ancho: 'w-4/5 mx-auto', label: 'Calificación' },
-  3: { ancho: 'w-3/5 mx-auto', label: 'Conversión' },
-  4: { ancho: 'w-2/5 mx-auto', label: 'Cierre' },
+const nivelesInfo: Record<number, { paddingX: string; label: string }> = {
+  1: { paddingX: 'px-0',    label: 'Tope del funnel' },
+  2: { paddingX: 'px-6',    label: 'Calificación' },
+  3: { paddingX: 'px-12',   label: 'Conversión' },
+  4: { paddingX: 'px-16',   label: 'Cierre' },
 }
 
 export default function Conversion() {
@@ -95,20 +95,15 @@ export default function Conversion() {
             return (
               <motion.div
                 key={nivel}
-                initial={{ opacity: 0, scaleX: 0.7 }}
+                initial={{ opacity: 0, scaleX: 0.8 }}
                 whileInView={{ opacity: 1, scaleX: 1 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.5, delay: (nivel - 1) * 0.15 }}
-                className={`${info.ancho} mb-4`}
+                className={`w-full ${info.paddingX} mb-4`}
               >
                 <div
                   className="rounded-2xl p-5 text-white"
-                  style={{
-                    background: herramienta[0]?.color || '#1E2A4A',
-                    clipPath: nivel === 4
-                      ? 'polygon(10% 0%, 90% 0%, 80% 100%, 20% 100%)'
-                      : undefined,
-                  }}
+                  style={{ background: herramienta[0]?.color || '#1E2A4A' }}
                 >
                   <p className="text-[10px] font-bold tracking-widest uppercase text-white/60 text-center mb-3">
                     {info.label}
@@ -140,7 +135,7 @@ export default function Conversion() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="w-2/5 mx-auto bg-white rounded-2xl p-4 flex flex-col items-center shadow-lg"
+            className="mx-auto w-fit bg-white rounded-2xl px-8 py-4 flex flex-col items-center shadow-lg"
           >
             <div className="flex items-center gap-1 mb-1">
               <span className="text-lg font-black text-[#1E2A4A]">Marka</span>
