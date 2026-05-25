@@ -41,9 +41,6 @@ export default function DiagnosticoContenido() {
 
   const onSubmit = async (data: FormData) => {
     setEnviando(true)
-    // Handler preparado para EmailJS
-    // const { NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_DIAGNOSTICO_ID, NEXT_PUBLIC_EMAILJS_PUBLIC_KEY } = process.env
-    // await emailjs.send(NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_DIAGNOSTICO_ID, data, NEXT_PUBLIC_EMAILJS_PUBLIC_KEY)
     await new Promise((res) => setTimeout(res, 1800))
     console.log('Diagnóstico solicitado:', data)
     setEnviando(false)
@@ -137,7 +134,7 @@ export default function DiagnosticoContenido() {
                   {[
                     'Llenas el formulario con información básica de tu negocio',
                     'Nuestro equipo te contacta en menos de 24 horas',
-                    'Agendamos la sesión de diagnóstico por videollamada',
+                    'Agendamos la sesión de diagnóstico',
                     'Recibes tu plan de acción personalizado',
                   ].map((paso, i) => (
                     <li key={i} className="flex items-start gap-3">
