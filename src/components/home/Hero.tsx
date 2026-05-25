@@ -31,11 +31,13 @@ export default function Hero() {
             opacity: forma.opacity,
           }}
           animate={{
-            y: [0, -20, 0],
-            scale: [1, 1.05, 1],
+            y: [0, i % 2 === 0 ? -28 : -18, 0],
+            x: [0, i % 2 === 0 ? 10 : -10, 0],
+            scale: [1, 1.08 + i * 0.02, 1],
+            rotate: [0, i % 2 === 0 ? 15 : -15, 0],
           }}
           transition={{
-            duration: 6 + i * 1.5,
+            duration: 7 + i * 1.5,
             repeat: Infinity,
             ease: 'easeInOut',
             delay: forma.delay,
@@ -140,22 +142,36 @@ export default function Hero() {
               {/* Círculo naranja */}
               <motion.div
                 className="absolute top-6 right-8 w-28 h-28 rounded-full bg-[#E8621A]"
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                animate={{
+                  scale: [1, 1.12, 1],
+                  x: [0, 6, 0],
+                  y: [0, -6, 0],
+                }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               />
 
               {/* Anillo azul medio */}
               <motion.div
                 className="absolute bottom-16 left-10 w-20 h-20 rounded-full border-4 border-[#4A7CC7]"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
+              />
+
+              {/* Pequeño círculo extra */}
+              <motion.div
+                className="absolute top-1/2 left-8 w-6 h-6 rounded-full bg-[#4A7CC7]/60"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.6, 1, 0.6],
+                }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
               />
 
               {/* Contenido del círculo */}
               <div className="text-center text-white z-10 px-12">
                 <div className="text-6xl font-black text-[#E8621A] mb-2">4</div>
-                <div className="text-xl font-bold mb-1">Servicios</div>
-                <div className="text-sm text-white/60 mb-8">Integrados en un sistema</div>
+                <div className="text-xl font-bold mb-1">Fases</div>
+                <div className="text-sm text-white/60 mb-8">Integradas en un sistema</div>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   {['Set-up Inicial', 'Atracción', 'Conversión', 'Fidelización'].map((s, i) => (
