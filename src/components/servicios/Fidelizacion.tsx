@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { HeadphonesIcon, Star, CreditCard, ArrowRight } from 'lucide-react'
+import { Bot, Star, CreditCard, ArrowRight } from 'lucide-react'
 import SectionTitle from '@/components/ui/SectionTitle'
 
 const pilares = [
   {
-    nombre: 'Servicio Post Venta',
-    descripcion: 'Acompañamiento continuo después del cierre para garantizar satisfacción del cliente, resolver dudas y promover la recompra.',
-    icono: HeadphonesIcon,
+    nombre: 'Bot de crecimiento del cliente',
+    descripcion: 'Automatización inteligente que acompaña al cliente después del cierre, impulsa la recompra y potencia el crecimiento de la relación comercial a largo plazo.',
+    icono: Bot,
     color: '#E8621A',
     bg: 'bg-[#E8621A]',
   },
