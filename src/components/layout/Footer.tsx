@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Phone, Mail, MapPin, Globe, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react'
+import { Phone, Mail, MapPin, Globe, Instagram, Facebook, Youtube } from 'lucide-react'
 
 const enlaces = [
   { href: '/', label: 'Inicio' },
@@ -15,6 +15,20 @@ const servicios = [
   { href: '/servicios#conversion', label: 'Conversión' },
   { href: '/servicios#fidelizacion', label: 'Fidelización' },
 ]
+
+function TikTokIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.67a8.18 8.18 0 0 0 4.78 1.52V6.72a4.85 4.85 0 0 1-1.01-.03z" />
+    </svg>
+  )
+}
 
 export default function Footer() {
   return (
@@ -38,16 +52,40 @@ export default function Footer() {
             </p>
             {/* Redes sociales */}
             <div className="flex items-center gap-3">
-              <a href="#" aria-label="Instagram" className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors">
+              <a
+                href="https://www.instagram.com/markalab_mx/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors"
+              >
                 <Instagram size={16} />
               </a>
-              <a href="#" aria-label="Facebook" className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors">
+              <a
+                href="https://www.facebook.com/profile.php?id=61575445052149"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors"
+              >
                 <Facebook size={16} />
               </a>
-              <a href="#" aria-label="LinkedIn" className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors">
-                <Linkedin size={16} />
+              <a
+                href="https://www.tiktok.com/@markalab_mx"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors"
+              >
+                <TikTokIcon size={16} />
               </a>
-              <a href="#" aria-label="YouTube" className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors">
+              <a
+                href="https://www.youtube.com/@MarkaLab_mx"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#E8621A] transition-colors"
+              >
                 <Youtube size={16} />
               </a>
             </div>
