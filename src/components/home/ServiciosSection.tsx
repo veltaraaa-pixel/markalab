@@ -44,7 +44,7 @@ const servicios = [
     color: '#1E2A4A',
     bgColor: '#1E2A4A',
     href: '/servicios#fidelizacion',
-    items: ['Servicio Post Venta', 'Estrategia de Reseñas', 'Suscripciones', 'Membresías'],
+    items: ['Bot de crecimiento del cliente', 'Estrategia de Reseñas', 'Suscripciones', 'Membresías'],
   },
 ]
 
@@ -74,7 +74,7 @@ export default function ServiciosSection() {
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                className="group relative bg-[#F0EBE3] rounded-2xl p-6 cursor-pointer overflow-hidden"
+                className="group relative bg-[#F0EBE3] rounded-2xl p-6 overflow-hidden"
               >
                 {/* Fondo hover */}
                 <motion.div
@@ -101,7 +101,7 @@ export default function ServiciosSection() {
                 </p>
 
                 {/* Items */}
-                <ul className="space-y-1.5 mb-6">
+                <ul className="space-y-1.5">
                   {servicio.items.map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm text-[#1E2A4A]/70">
                       <span
@@ -113,13 +113,14 @@ export default function ServiciosSection() {
                   ))}
                 </ul>
 
-                <Link
+                {/* "Ver detalles" oculto — se puede reactivar en el futuro */}
+                {/* <Link
                   href={servicio.href}
-                  className="flex items-center gap-1 text-sm font-semibold transition-colors"
+                  className="flex items-center gap-1 text-sm font-semibold transition-colors mt-6"
                   style={{ color: servicio.bgColor }}
                 >
                   Ver detalles <ArrowRight size={14} />
-                </Link>
+                </Link> */}
               </motion.div>
             )
           })}
