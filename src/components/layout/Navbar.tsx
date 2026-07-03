@@ -75,11 +75,11 @@ export default function Navbar() {
         {/* CTA escritorio */}
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="tel:+525581001579"
+            href="tel:+525611232604"
             className="flex items-center gap-2 text-sm text-[#1E2A4A]/70 hover:text-[#E8621A] transition-colors"
           >
             <Phone size={14} />
-            <span>55 8100 1579</span>
+            <span>56 1123 2604</span>
           </a>
           <Link
             href="/diagnostico"
