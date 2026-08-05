@@ -53,7 +53,7 @@ export default function CtaSection() {
               <Link href="/diagnostico" className="btn-naranja text-base px-8 py-4">
                 Agenda tu diagnóstico <ArrowRight size={18} />
               </Link>
-              <a href="tel:+525611232604" className="btn-outline text-base px-8 py-4">
+              <a href="/contacto#formulario" className="btn-outline text-base px-8 py-4">
                 <Phone size={16} />
                56 1123 2604
               </a>
@@ -61,7 +61,7 @@ export default function CtaSection() {
 
             {/* Datos de contacto rápidos */}
             <div className="mt-10 pt-8 border-t border-gray-100 flex flex-col sm:flex-row gap-4">
-              <a href="tel:+525611232604" className="flex items-center gap-2 text-sm text-[#1E2A4A]/60 hover:text-[#E8621A] transition-colors">
+              <a href="/contacto#formulario" className="flex items-center gap-2 text-sm text-[#1E2A4A]/60 hover:text-[#E8621A] transition-colors">
                 <Phone size={14} />
                 +52 56 1123 2604
               </a>

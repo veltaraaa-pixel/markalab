@@ -124,7 +124,7 @@ export default function Footer() {
             <h3 className="font-bold text-sm tracking-widest uppercase text-white/50 mb-5">Contacto</h3>
             <ul className="space-y-4">
               <li>
-                <a href="tel:+525611232604" className="flex items-start gap-3 text-white/70 hover:text-[#E8621A] transition-colors text-sm group">
+                <a href="/contacto#formulario" className="flex items-start gap-3 text-white/70 hover:text-[#E8621A] transition-colors text-sm group">
                   <Phone size={16} className="mt-0.5 shrink-0 group-hover:text-[#E8621A]" />
                   +52 56 1123 2604
                 </a>

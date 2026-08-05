@@ -84,7 +84,7 @@ export default function Navbar() {
         {/* CTA escritorio */}
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="tel:+525611232604"
+            href="/contacto#formulario"
             className={cn(
               'flex items-center gap-2 text-sm transition-colors hover:text-[#E8621A]',
               textoClaro ? 'text-[#F0EBE3]/80' : 'text-[#1E2A4A]/70'
