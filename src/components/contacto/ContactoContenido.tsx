@@ -32,7 +32,7 @@ const datosContacto = [
     icono: Globe,
     titulo: 'Sitio Web',
     valor: contactoData.sitioWeb,
-    href: '#',
+    href: '/contacto#formulario',
     color: '#E8621A',
   },
   {
@@ -178,6 +178,8 @@ export default function ContactoContenido() {
 
             {/* Formulario */}
             <motion.div
+              id="formulario"
+              className="scroll-mt-28"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}

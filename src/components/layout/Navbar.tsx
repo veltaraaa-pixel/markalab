@@ -16,10 +16,17 @@ const enlaces = [
   { href: '/contacto', label: 'Contacto' },
 ]
 
+// Rutas cuyo hero tiene fondo azul oscuro: ahí el nav debe ir en color crema
+const rutasHeroOscuro = ['/servicios', '/nuestra-formula', '/diagnostico', '/contacto']
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
   const pathname = usePathname()
+
+  // Texto claro (crema) solo cuando el hero oscuro está visible (aún sin scroll).
+  // Al hacer scroll el fondo del nav se vuelve blanco, entonces vuelve a azul oscuro.
+  const textoClaro = rutasHeroOscuro.includes(pathname) && !scrolled
 
   useEffect(() => {
     const manejarScroll = () => setScrolled(window.scrollY > 20)
@@ -63,6 +70,8 @@ export default function Navbar() {
                   'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
                   pathname === enlace.href
                     ? 'text-[#E8621A] font-semibold'
+                    : textoClaro
+                    ? 'text-[#F0EBE3] hover:text-[#E8621A] hover:bg-white/10'
                     : 'text-[#1E2A4A] hover:text-[#E8621A] hover:bg-[#E8621A]/5'
                 )}
               >
@@ -76,7 +85,10 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <a
             href="tel:+525611232604"
-            className="flex items-center gap-2 text-sm text-[#1E2A4A]/70 hover:text-[#E8621A] transition-colors"
+            className={cn(
+              'flex items-center gap-2 text-sm transition-colors hover:text-[#E8621A]',
+              textoClaro ? 'text-[#F0EBE3]/80' : 'text-[#1E2A4A]/70'
+            )}
           >
             <Phone size={14} />
             <span>56 1123 2604</span>
@@ -92,7 +104,10 @@ export default function Navbar() {
         {/* Botón hamburguesa */}
         <button
           onClick={() => setMenuAbierto(!menuAbierto)}
-          className="md:hidden p-2 rounded-lg text-[#1E2A4A] hover:bg-[#E8621A]/10 transition-colors"
+          className={cn(
+            'md:hidden p-2 rounded-lg transition-colors hover:bg-[#E8621A]/10',
+            textoClaro ? 'text-[#F0EBE3]' : 'text-[#1E2A4A]'
+          )}
           aria-label="Menú"
         >
           {menuAbierto ? <X size={24} /> : <Menu size={24} />}
