@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import WhatsAppBoton from '@/components/layout/WhatsAppBoton'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.markalab.com.mx'
 
@@ -75,6 +76,7 @@ export default function RootLayout({
         <Navbar />
         <main>{children}</main>
         <Footer />
+        <WhatsAppBoton />
       </body>
     </html>
   )
