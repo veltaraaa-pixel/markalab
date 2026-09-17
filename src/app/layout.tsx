@@ -3,6 +3,7 @@ import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import WhatsAppBoton from '@/components/layout/WhatsAppBoton'
+import ChatAgente from '@/components/chat/ChatAgente'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.markalab.com.mx'
 
@@ -77,6 +78,7 @@ export default function RootLayout({
         <main>{children}</main>
         <Footer />
         <WhatsAppBoton />
+        <ChatAgente />
       </body>
     </html>
   )
