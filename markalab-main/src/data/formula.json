@@ -1,0 +1,60 @@
+{
+  "pasos": [
+    {
+      "numero": 1,
+      "titulo": "Diagnóstico Comercial",
+      "subtitulo": "Analizamos tu negocio a fondo",
+      "descripcion": "Mediante la IA, analizamos los cuellos de botella, fortalezas, oportunidades y urgencias que tu negocio necesita. Analizamos tu mercado, proceso de ventas e identificamos tu buyer persona.",
+      "puntos": [
+        "Análisis de cuellos de botella comerciales",
+        "Identificación de fortalezas y oportunidades",
+        "Mapeo del proceso de ventas actual",
+        "Definición del buyer persona",
+        "Diagnóstico impulsado por inteligencia artificial"
+      ],
+      "color": "#E8621A"
+    },
+    {
+      "numero": 2,
+      "titulo": "Diseño del Sistema",
+      "subtitulo": "Estrategia personalizada para tu mercado",
+      "descripcion": "Nos apoyamos en nuestras soluciones probadas y aprovechamos la experiencia adquirida para saber qué proponemos. Creamos una estructura de adquisición personalizada, orientada a tu mercado objetivo.",
+      "puntos": [
+        "Selección de canales de atracción óptimos",
+        "Diseño del funnel comercial a medida",
+        "Definición de herramientas de conversión",
+        "Plan de fidelización de clientes",
+        "Estrategia de contenido y comunicación"
+      ],
+      "color": "#1E2A4A"
+    },
+    {
+      "numero": 3,
+      "titulo": "Implementación",
+      "subtitulo": "Activamos y ejecutamos tu sistema",
+      "descripcion": "Las aplicaciones que tenemos basadas en la IA nos permiten ejecutar y obtener resultados inmediatos. Activamos canales, automatizaciones y estrategias comerciales orientadas a generar LEADS.",
+      "puntos": [
+        "Activación de canales digitales y físicos",
+        "Configuración de automatizaciones comerciales",
+        "Integración de herramientas de IA",
+        "Lanzamiento de campañas de atracción",
+        "Puesta en marcha del sistema de conversión"
+      ],
+      "color": "#4A7CC7"
+    },
+    {
+      "numero": 4,
+      "titulo": "Optimización",
+      "subtitulo": "Mejora continua y resultados sostenibles",
+      "descripcion": "Automatizamos procesos de ventas, mostramos resultados y mantenemos los proyectos ganados a largo plazo. Medimos resultados, presentamos reportes y hacemos adaptaciones rápidamente.",
+      "puntos": [
+        "Reportes de desempeño periódicos",
+        "Análisis de métricas y KPIs clave",
+        "Ajustes ágiles basados en datos",
+        "Automatización de procesos de seguimiento",
+        "Escalamiento de estrategias exitosas"
+      ],
+      "color": "#E8621A"
+    }
+  ]
+}

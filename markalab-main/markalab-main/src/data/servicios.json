@@ -1,0 +1,94 @@
+{
+  "setup": {
+    "id": "setup-inicial",
+    "titulo": "Set-up Inicial",
+    "descripcion": "Queremos conocerlos, saber a dónde quieren llegar, qué productos y servicios venden; así elaboramos estrategias personalizadas para su negocio.",
+    "color": "azul-oscuro",
+    "icono": "Settings",
+    "entregables": [
+      { "numero": "01", "nombre": "Análisis de Mercado", "descripcion": "Estudio profundo del mercado objetivo, tendencias y oportunidades de negocio." },
+      { "numero": "02", "nombre": "Análisis de Competencia", "descripcion": "Mapeo de competidores directos e indirectos, fortalezas y brechas del mercado." },
+      { "numero": "03", "nombre": "Hook Diferenciador", "descripcion": "Propuesta de valor única que posiciona tu marca sobre la competencia." },
+      { "numero": "04", "nombre": "Definir Buyer Persona", "descripcion": "Perfil detallado de tu cliente ideal para enfocar todos los esfuerzos comerciales." },
+      { "numero": "05", "nombre": "Identidad Corporativa", "descripcion": "Desarrollo de la imagen visual y verbal que representa tu empresa." },
+      { "numero": "06", "nombre": "Sitio Web Básico", "descripcion": "Presencia digital profesional orientada a conversión y captación de leads." },
+      { "numero": "07", "nombre": "Brand Voice", "descripcion": "Definición del tono, estilo y voz de comunicación de tu marca." },
+      { "numero": "08", "nombre": "Diagnóstico Comercial AI", "descripcion": "Análisis inteligente de tu proceso comercial actual con recomendaciones accionables." },
+      { "numero": "09", "nombre": "Sales Deck", "descripcion": "Presentación comercial de alto impacto para cerrar más negocios." },
+      { "numero": "10", "nombre": "Levantamiento de Contenido", "descripcion": "Producción y catalogación de materiales visuales y textuales de tu marca." }
+    ]
+  },
+  "atraccion": {
+    "id": "atraccion",
+    "titulo": "Atracción",
+    "descripcion": "Juntos definimos qué soluciones de nuestro portafolio se requieren para lograr sus objetivos y atraer clientes potenciales calificados.",
+    "color": "naranja",
+    "icono": "Magnet",
+    "canales": [
+      { "nombre": "RRSS", "categoria": "Digital" },
+      { "nombre": "Mailing", "categoria": "Digital" },
+      { "nombre": "SEO Local", "categoria": "Digital" },
+      { "nombre": "E-Commerce", "categoria": "Digital" },
+      { "nombre": "Influencer Marketing", "categoria": "Digital" },
+      { "nombre": "Market Places", "categoria": "Digital" },
+      { "nombre": "ADS / SEM", "categoria": "Digital" },
+      { "nombre": "Sitio Web SEO", "categoria": "Digital" },
+      { "nombre": "Podcast", "categoria": "Digital" },
+      { "nombre": "ATL", "categoria": "Tradicional" },
+      { "nombre": "BTL", "categoria": "Tradicional" },
+      { "nombre": "Distribuidores", "categoria": "Tradicional" },
+      { "nombre": "Eventos", "categoria": "Presencial" },
+      { "nombre": "Ferias", "categoria": "Presencial" },
+      { "nombre": "Congresos", "categoria": "Presencial" },
+      { "nombre": "Punto de Venta", "categoria": "Presencial" },
+      { "nombre": "Cold Caller Bot Outbound", "categoria": "Tecnología" },
+      { "nombre": "Licitaciones", "categoria": "Institucional" },
+      { "nombre": "Scraper", "categoria": "Tecnología" },
+      { "nombre": "Blog", "categoria": "Digital" },
+      { "nombre": "Funnel de Ventas", "categoria": "Digital" },
+      { "nombre": "Apps Ads", "categoria": "Digital" },
+      { "nombre": "Plataformas Especializadas", "categoria": "Digital" }
+    ]
+  },
+  "conversion": {
+    "id": "conversion",
+    "titulo": "Conversión",
+    "descripcion": "Recomendamos las herramientas correctas que nos darán ese retorno de inversión (Leads, oportunidades, funnel, Pipeline) para convertir prospectos en clientes.",
+    "color": "azul-medio",
+    "icono": "TrendingUp",
+    "herramientas": [
+      { "nombre": "Recursos Comerciales", "descripcion": "Materiales y procesos que empoderan a tu equipo de ventas.", "nivel": 1 },
+      { "nombre": "Asistente Telefónico 24/7 Inbound", "descripcion": "Atención automatizada para capturar leads en cualquier horario.", "nivel": 1 },
+      { "nombre": "Chatbot Atención a Clientes", "descripcion": "Respuesta inmediata a dudas frecuentes y calificación de prospectos.", "nivel": 2 },
+      { "nombre": "Chatbot Multicanal", "descripcion": "Presencia unificada en WhatsApp, web, Instagram y más.", "nivel": 2 },
+      { "nombre": "Smart Promos", "descripcion": "Promociones inteligentes activadas por comportamiento del usuario.", "nivel": 3 },
+      { "nombre": "Agenda y Reservas", "descripcion": "Sistema de citas automatizado para reducir fricción en el proceso de venta.", "nivel": 3 },
+      { "nombre": "Capacitaciones Comerciales", "descripcion": "Formación especializada para maximizar el desempeño de tu equipo.", "nivel": 4 },
+      { "nombre": "Desarrollo de Apps", "descripcion": "Soluciones digitales a medida para optimizar tu proceso comercial.", "nivel": 4 }
+    ]
+  },
+  "fidelizacion": {
+    "id": "fidelizacion",
+    "titulo": "Fidelización",
+    "descripcion": "En base a diferentes mecanismos, garantizamos la relación con sus socios de negocio a largo plazo y convertimos clientes en promotores de tu marca.",
+    "color": "azul-medio",
+    "icono": "Heart",
+    "pilares": [
+      {
+        "nombre": "Servicio Post Venta",
+        "descripcion": "Acompañamiento continuo después del cierre para garantizar satisfacción y recompra.",
+        "color": "#E8621A"
+      },
+      {
+        "nombre": "Estrategia de Reseñas",
+        "descripcion": "Plan sistemático para generar reseñas positivas y gestionar la reputación digital.",
+        "color": "#4A7CC7"
+      },
+      {
+        "nombre": "Suscripciones y Membresías",
+        "descripcion": "Modelos de recurrencia que generan ingresos predecibles y lealtad a largo plazo.",
+        "color": "#1E2A4A"
+      }
+    ]
+  }
+}
