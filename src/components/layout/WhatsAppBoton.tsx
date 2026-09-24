@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 
 // Número de WhatsApp de MarkaLab (formato internacional: 52 = México)
+// Va arriba del botón de Kala, que ocupa la esquina inferior derecha.
 const NUMERO_WHATSAPP = '525611232604'
 const MENSAJE = 'Hola MarkaLab, me gustaría recibir más información.'
 
@@ -20,7 +21,7 @@ export default function WhatsAppBoton() {
       transition={{ delay: 1, type: 'spring', stiffness: 260, damping: 20 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-24 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/40 transition-shadow hover:shadow-xl hover:shadow-[#25D366]/50"
+      className="fixed bottom-[6.75rem] right-[1.9rem] z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/40 transition-shadow hover:shadow-xl hover:shadow-[#25D366]/50"
     >
       {/* Halo de pulso */}
       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#25D366] opacity-40" />

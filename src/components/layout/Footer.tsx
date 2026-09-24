@@ -153,9 +153,17 @@ export default function Footer() {
 
         {/* Línea divisoria y copyright */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-white/40 text-sm">
-            © 2026 MarkaLab. Todos los derechos reservados.
-          </p>
+          <div className="flex flex-col items-center gap-2 md:flex-row md:gap-5">
+            <p className="text-white/40 text-sm">
+              © 2026 MarkaLab. Todos los derechos reservados.
+            </p>
+            <Link
+              href="/aviso-de-privacidad"
+              className="text-white/40 hover:text-[#E8621A] transition-colors text-sm"
+            >
+              Aviso de privacidad
+            </Link>
+          </div>
           <Link
             href="/diagnostico"
             className="text-sm bg-[#E8621A] text-white px-5 py-2 rounded-full hover:bg-[#C4511A] transition-colors"
