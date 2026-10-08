@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-const ACTUALIZADO = '24 de septiembre de 2026'
+const ACTUALIZADO = '6 de octubre de 2026'
 
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
@@ -103,6 +103,25 @@ export default function AvisoDePrivacidad() {
           </p>
         </Seccion>
 
+        <Seccion titulo="Si hablas con Kala por voz">
+          <p>
+            El modo voz es opcional y solo se activa si tocas el botón del micrófono y le das
+            permiso a tu navegador. Mientras está activo, tu voz se graba por fragmentos cortos
+            para convertirla en texto, y las respuestas de Kala se convierten en audio.
+          </p>
+          <p>
+            Para hacerlo usamos servicios de terceros especializados en reconocimiento y síntesis
+            de voz. Lo que dijiste se guarda como texto, igual que si lo hubieras escrito; no
+            usamos tu voz para identificarte ni para ningún fin distinto a responderte. Los
+            registros técnicos del sistema se conservan por un periodo limitado para poder
+            corregir errores.
+          </p>
+          <p>
+            Puedes salir del modo voz en cualquier momento con el botón Terminar, y retirar el
+            permiso del micrófono desde la configuración de tu navegador.
+          </p>
+        </Seccion>
+
         <Seccion titulo="Con quién los compartimos">
           <p>
             No vendemos ni rentamos tus datos. Los compartimos únicamente con proveedores que nos
@@ -110,7 +129,7 @@ export default function AvisoDePrivacidad() {
           </p>
           <ul className="ml-5 list-disc space-y-1.5">
             <li>Servicios de infraestructura, correo, calendario y almacenamiento en la nube.</li>
-            <li>Proveedores de automatización de procesos y de inteligencia artificial conversacional.</li>
+            <li>Proveedores de automatización de procesos, de inteligencia artificial conversacional y de reconocimiento y síntesis de voz.</li>
             <li>Autoridades competentes, cuando exista una obligación legal.</li>
           </ul>
           <p>
