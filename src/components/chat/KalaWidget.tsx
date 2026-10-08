@@ -1,6 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Kala from './KalaAvatar'
+import KalaVoz, { prepararVoz, vozDisponible } from './KalaVoz'
 
 /* ------------------------------------------------------------------ */
 /*  Configuración                                                      */
@@ -17,58 +19,15 @@ const SALUDO = [
 
 const ESPERA_SALUDO = 2200
 const ESPERA_RECORDATORIO = 22000
-const TIEMPO_LIMITE = 45000
+// Un turno que genera y envia la propuesta tarda cerca de un minuto. Cortar antes
+// hace que la persona vea un error aunque todo haya salido bien en el servidor.
+const TIEMPO_LIMITE = 120000
+// Si pasa de esto, Kala avisa que sigue trabajando para que no parezca colgada.
+const AVISO_ESPERA = 9000
 
 type Quien = 'kala' | 'persona' | 'error'
 type Mensaje = { id: number; texto: string; quien: Quien }
 type Turno = { rol: 'user' | 'assistant'; texto: string }
-
-/* ------------------------------------------------------------------ */
-/*  Avatar                                                             */
-/* ------------------------------------------------------------------ */
-function Kala({ detallada = false, ojosRef }: { detallada?: boolean; ojosRef?: React.RefObject<SVGGElement> }) {
-  const id = detallada ? 'kalaClip' : 'kalaClipMini'
-  return (
-    <svg viewBox="0 0 200 200" className="block h-full w-full" aria-hidden="true">
-      <circle cx="100" cy="100" r="96" fill="#1E2A4A" />
-      <circle
-        cx="100" cy="100" r="95"
-        fill="none" stroke="#E8621A" strokeWidth="7" strokeLinecap="round"
-        className={detallada ? 'kala-anillo' : ''}
-      />
-      <clipPath id={id}><circle cx="100" cy="100" r="92" /></clipPath>
-      <g clipPath={`url(#${id})`} className={detallada ? 'kala-cara' : ''}>
-        <path d="M40 120c0-45 26-76 60-76s60 31 60 76v96H40z" fill="#1E2A4A" />
-        <ellipse cx="100" cy="124" rx="52" ry="63" fill="#F0EBE3" />
-        <path d="M58 200c4-20 20-30 42-30s38 10 42 30z" fill="#F0EBE3" />
-        <path d="M46 84c9-28 29-43 54-43s45 15 54 43v8H46z" fill="#1E2A4A" />
-        {detallada && (
-          <>
-            <path d="M74 96q26-16 52 0" fill="none" stroke="#1E2A4A" strokeWidth="4" strokeLinecap="round" />
-            <path d="M70 62q30-11 60 0" fill="none" stroke="#A8441A" strokeWidth="4" strokeLinecap="round" />
-            <ellipse cx="60" cy="86" rx="9" ry="7" fill="#B94F26" transform="rotate(-20 60 86)" />
-            <ellipse cx="140" cy="86" rx="9" ry="7" fill="#B94F26" transform="rotate(20 140 86)" />
-            <path d="M68 108q11-7 22-1" fill="none" stroke="#B9B3AA" strokeWidth="2.6" strokeLinecap="round" />
-            <path d="M110 107q11-6 22 1" fill="none" stroke="#B9B3AA" strokeWidth="2.6" strokeLinecap="round" />
-          </>
-        )}
-        <g ref={ojosRef}>
-          <g className={detallada ? 'kala-ojo' : ''}>
-            <ellipse cx="76" cy="126" rx="16" ry="10" fill="#E8621A" />
-            <circle cx="79" cy="126" r="5.6" fill="#1E2A4A" />
-            {detallada && <circle cx="81" cy="123.6" r="1.9" fill="#fff" />}
-          </g>
-          <g className={detallada ? 'kala-ojo kala-ojo-der' : ''}>
-            <ellipse cx="124" cy="126" rx="16" ry="10" fill="#E8621A" />
-            <circle cx="127" cy="126" r="5.6" fill="#1E2A4A" />
-            {detallada && <circle cx="129" cy="123.6" r="1.9" fill="#fff" />}
-          </g>
-        </g>
-        <path d="M82 156q18 15 36 0" fill="none" stroke="#1E2A4A" strokeWidth="5.5" strokeLinecap="round" />
-      </g>
-    </svg>
-  )
-}
 
 /* ------------------------------------------------------------------ */
 /*  Widget                                                             */
@@ -84,6 +43,12 @@ export default function KalaWidget() {
   const [ocupado, setOcupado] = useState(false)
   const [borrador, setBorrador] = useState('')
   const [verificada, setVerificada] = useState(false)
+  const [vozActiva, setVozActiva] = useState(false)
+  const [conVoz, setConVoz] = useState(false)
+
+  // el boton de microfono solo existe si el navegador puede grabar y hay endpoint de voz
+  useEffect(() => { setConVoz(vozDisponible()) }, [])
+  const [esperaLarga, setEsperaLarga] = useState(false)
 
   const hilo = useRef<HTMLDivElement>(null)
   const campo = useRef<HTMLTextAreaElement>(null)
@@ -194,6 +159,7 @@ export default function KalaWidget() {
 
     const corte = new AbortController()
     const reloj = setTimeout(() => corte.abort(), TIEMPO_LIMITE)
+    const avisoEspera = setTimeout(() => setEsperaLarga(true), AVISO_ESPERA)
 
     try {
       const r = await fetch(ENDPOINT, {
@@ -208,7 +174,7 @@ export default function KalaWidget() {
         }),
         signal: corte.signal,
       })
-      clearTimeout(reloj)
+      clearTimeout(reloj); clearTimeout(avisoEspera); setEsperaLarga(false)
       if (r.status === 401) throw new Error('no_autorizado')
       if (!r.ok) throw new Error(`http_${r.status}`)
 
@@ -220,19 +186,37 @@ export default function KalaWidget() {
       if (lista.length) pintarSecuencia(lista)
       else agregar('Perdón, se me trabó la respuesta. ¿Me lo pides otra vez?', 'kala')
     } catch (e) {
-      clearTimeout(reloj)
+      clearTimeout(reloj); clearTimeout(avisoEspera); setEsperaLarga(false)
       setEscribiendo(false)
+      const err = e as Error
       agregar(
-        (e as Error).message === 'no_autorizado'
+        err.message === 'no_autorizado'
           ? 'No pude verificar esta sesión. Recarga la página e inténtalo de nuevo.'
-          : 'No pude conectar. Revisa tu conexión e inténtalo otra vez.',
-        'error',
+          : err.name === 'AbortError'
+            // Se agoto el tiempo, pero el servidor pudo haber terminado. No decir
+            // que fallo algo que probablemente si ocurrio.
+            ? 'Esto se está tardando más de lo normal. Si te iba a mandar algo por correo, revisa tu bandeja en unos minutos; si no te llega, escríbeme de nuevo.'
+            : 'No pude conectar. Revisa tu conexión e inténtalo otra vez.',
+        err.name === 'AbortError' ? 'kala' : 'error',
       )
     } finally {
       setOcupado(false)
       setTimeout(() => campo.current?.focus(), 60)
     }
   }, [borrador, ocupado, agregar, pintarSecuencia])
+
+  /* --- modo voz --- */
+  const alTurnoVoz = useCallback((persona: string, kala: string[], rol?: string) => {
+    if (persona) { agregar(persona, 'persona'); historial.current.push({ rol: 'user', texto: persona }) }
+    for (const m of kala) { agregar(m, 'kala'); historial.current.push({ rol: 'assistant', texto: m }) }
+    if (rol === 'cliente') setVerificada(true)
+  }, [agregar])
+
+  const activarVoz = useCallback(() => {
+    prepararVoz()          // dentro del toque: asi el navegador permite microfono y audio
+    interactuo.current = true
+    setVozActiva(true)
+  }, [])
 
   const alternar = useCallback(() => {
     interactuo.current = true
@@ -247,6 +231,7 @@ export default function KalaWidget() {
         }
         setTimeout(() => campo.current?.focus(), 320)
       } else {
+        setVozActiva(false)
         setTimeout(() => boton.current?.focus(), 60)
       }
       return nuevo
@@ -254,10 +239,14 @@ export default function KalaWidget() {
   }, [pintarSecuencia])
 
   useEffect(() => {
-    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape' && abierto) alternar() }
+    const esc = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      if (vozActiva) { setVozActiva(false); return }
+      if (abierto) alternar()
+    }
     window.addEventListener('keydown', esc)
     return () => window.removeEventListener('keydown', esc)
-  }, [abierto, alternar])
+  }, [abierto, alternar, vozActiva])
 
   if (!ENDPOINT) return null
 
@@ -292,6 +281,7 @@ export default function KalaWidget() {
           >×</button>
         </div>
 
+        <div className="relative flex min-h-0 flex-1 flex-col">
         <div
           ref={hilo} role="log" aria-live="polite" aria-relevant="additions"
           className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto bg-[#F0EBE3] p-5 [overscroll-behavior:contain]"
@@ -322,6 +312,12 @@ export default function KalaWidget() {
               <i className="kala-pt h-1.5 w-1.5 rounded-full bg-[#9FA8B8]" style={{ animationDelay: '.36s' }} />
             </div>
           )}
+
+          {escribiendo && esperaLarga && (
+            <p className="kala-globo -mt-1 self-start px-1 text-xs text-[#1E2A4A]/55">
+              Sigo trabajando en esto, dame un momento…
+            </p>
+          )}
         </div>
 
         <div className="shrink-0 border-t border-[#E4DED4] bg-white px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
@@ -340,6 +336,19 @@ export default function KalaWidget() {
               }}
               className="max-h-[6.5rem] flex-1 resize-none rounded-[22px] border-[1.5px] border-[#E4DED4] px-4 py-2.5 text-[0.93rem] leading-snug text-[#1E2A4A] outline-none transition-colors placeholder:text-[#A8A29A] focus:border-[#E8621A] disabled:opacity-60"
             />
+            {conVoz && (
+              <button
+                type="button" onClick={activarVoz} disabled={ocupado}
+                aria-label="Hablar con Kala por voz"
+                title="Hablar con Kala"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full border-[1.5px] border-[#E4DED4] text-[#1E2A4A] transition-[colors,transform] hover:border-[#E8621A] hover:text-[#E8621A] active:scale-95 disabled:opacity-35"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]" aria-hidden="true">
+                  <rect x="9" y="2" width="6" height="12" rx="3" />
+                  <path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8" />
+                </svg>
+              </button>
+            )}
             <button
               type="button" onClick={enviar} disabled={ocupado || !borrador.trim()}
               aria-label="Enviar mensaje"
@@ -354,6 +363,17 @@ export default function KalaWidget() {
             Al continuar aceptas que usemos tus datos para contactarte.{' '}
             <a href="/aviso-de-privacidad" className="underline hover:text-[#E8621A]">Aviso de privacidad</a>
           </p>
+        </div>
+
+        {vozActiva && (
+          <KalaVoz
+            sesion={sesion.current}
+            token={tokenCliente.current}
+            obtenerHistorial={() => historial.current}
+            alTurno={alTurnoVoz}
+            alTerminar={() => { setVozActiva(false); setTimeout(() => campo.current?.focus(), 60) }}
+          />
+        )}
         </div>
       </div>
 
