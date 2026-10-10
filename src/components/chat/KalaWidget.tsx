@@ -3,6 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Kala from './KalaAvatar'
 import KalaVoz, { prepararVoz, vozDisponible } from './KalaVoz'
+import dynamic from 'next/dynamic'
+import type { WebCallSession } from 'retell-client-js-sdk'
+import type { TurnoVoz } from './KalaRetell'
+
+// El SDK de Retell pesa ~540 KB: solo se descarga cuando alguien abre el chat,
+// no en cada pagina del sitio.
+const KalaRetell = dynamic(() => import('./KalaRetell'), { ssr: false })
+const cargarRetell = () => import('./KalaRetell')
+const RETELL_CONFIGURADO = !!process.env.NEXT_PUBLIC_RETELL_PUBLIC_KEY && !!process.env.NEXT_PUBLIC_RETELL_AGENT_ID
 
 /* ------------------------------------------------------------------ */
 /*  Configuración                                                      */
@@ -45,9 +54,16 @@ export default function KalaWidget() {
   const [verificada, setVerificada] = useState(false)
   const [vozActiva, setVozActiva] = useState(false)
   const [conVoz, setConVoz] = useState(false)
+  const [llamada, setLlamada] = useState<WebCallSession | null>(null)
+  const usaRetell = useRef(false)
+  const moduloRetell = useRef<Awaited<ReturnType<typeof cargarRetell>> | null>(null)
 
   // el boton de microfono solo existe si el navegador puede grabar y hay endpoint de voz
-  useEffect(() => { setConVoz(vozDisponible()) }, [])
+  // Retell si esta configurado; si no, el modo voz por n8n; si ninguno, sin microfono
+  useEffect(() => {
+    usaRetell.current = RETELL_CONFIGURADO && !!navigator.mediaDevices?.getUserMedia
+    setConVoz(usaRetell.current || vozDisponible())
+  }, [])
   const [esperaLarga, setEsperaLarga] = useState(false)
 
   const hilo = useRef<HTMLDivElement>(null)
@@ -206,17 +222,49 @@ export default function KalaWidget() {
   }, [borrador, ocupado, agregar, pintarSecuencia])
 
   /* --- modo voz --- */
-  const alTurnoVoz = useCallback((persona: string, kala: string[], rol?: string) => {
-    if (persona) { agregar(persona, 'persona'); historial.current.push({ rol: 'user', texto: persona }) }
-    for (const m of kala) { agregar(m, 'kala'); historial.current.push({ rol: 'assistant', texto: m }) }
+  useEffect(() => {
+    if (abierto && usaRetell.current && !moduloRetell.current) {
+      cargarRetell().then((m) => { moduloRetell.current = m }).catch(() => {})
+    }
+  }, [abierto])
+
+  const alPersonaVoz = useCallback((texto: string) => {
+    agregar(texto, 'persona'); historial.current.push({ rol: 'user', texto })
+  }, [agregar])
+
+  const alKalaVoz = useCallback((mensajes: string[], rol?: string) => {
+    for (const m of mensajes) { agregar(m, 'kala'); historial.current.push({ rol: 'assistant', texto: m }) }
     if (rol === 'cliente') setVerificada(true)
   }, [agregar])
 
   const activarVoz = useCallback(() => {
-    prepararVoz()          // dentro del toque: asi el navegador permite microfono y audio
     interactuo.current = true
+    if (usaRetell.current) {
+      // la llamada se abre dentro del toque: asi el navegador permite microfono y audio.
+      // El modulo ya se precargo al abrir el chat; si aun no llega, se espera.
+      const abrir = (m: Awaited<ReturnType<typeof cargarRetell>>) => {
+        try { setLlamada(m.abrirLlamada(sesion.current, tokenCliente.current)) }
+        catch { agregar('No pude abrir la llamada. Seguimos por escrito.', 'error') }
+      }
+      if (moduloRetell.current) abrir(moduloRetell.current)
+      else cargarRetell().then((m) => { moduloRetell.current = m; abrir(m) })
+        .catch(() => agregar('No pude abrir la llamada. Seguimos por escrito.', 'error'))
+      return
+    }
+    prepararVoz()
     setVozActiva(true)
-  }, [])
+  }, [agregar])
+
+  // Al colgar, lo que se habló queda escrito en el chat y en el historial
+  const terminarLlamada = useCallback((turnos: TurnoVoz[]) => {
+    for (const t of turnos) {
+      if (!t.texto.trim()) continue
+      agregar(t.texto, t.rol === 'user' ? 'persona' : 'kala')
+      historial.current.push({ rol: t.rol === 'user' ? 'user' : 'assistant', texto: t.texto })
+    }
+    setLlamada(null)
+    setTimeout(() => campo.current?.focus(), 60)
+  }, [agregar])
 
   const alternar = useCallback(() => {
     interactuo.current = true
@@ -232,6 +280,7 @@ export default function KalaWidget() {
         setTimeout(() => campo.current?.focus(), 320)
       } else {
         setVozActiva(false)
+        setLlamada((l) => { l?.end().catch(() => {}); return null })
         setTimeout(() => boton.current?.focus(), 60)
       }
       return nuevo
@@ -242,11 +291,12 @@ export default function KalaWidget() {
     const esc = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
       if (vozActiva) { setVozActiva(false); return }
+      if (llamada) { llamada.end().catch(() => {}); return }
       if (abierto) alternar()
     }
     window.addEventListener('keydown', esc)
     return () => window.removeEventListener('keydown', esc)
-  }, [abierto, alternar, vozActiva])
+  }, [abierto, alternar, vozActiva, llamada])
 
   if (!ENDPOINT) return null
 
@@ -338,7 +388,7 @@ export default function KalaWidget() {
             />
             {conVoz && (
               <button
-                type="button" onClick={activarVoz} disabled={ocupado}
+                type="button" onClick={activarVoz} disabled={ocupado || !!llamada}
                 aria-label="Hablar con Kala por voz"
                 title="Hablar con Kala"
                 className="grid h-10 w-10 shrink-0 place-items-center rounded-full border-[1.5px] border-[#E4DED4] text-[#1E2A4A] transition-[colors,transform] hover:border-[#E8621A] hover:text-[#E8621A] active:scale-95 disabled:opacity-35"
@@ -365,12 +415,15 @@ export default function KalaWidget() {
           </p>
         </div>
 
+        {llamada && <KalaRetell llamada={llamada} alTerminar={terminarLlamada} />}
+
         {vozActiva && (
           <KalaVoz
             sesion={sesion.current}
             token={tokenCliente.current}
             obtenerHistorial={() => historial.current}
-            alTurno={alTurnoVoz}
+            alPersona={alPersonaVoz}
+            alKala={alKalaVoz}
             alTerminar={() => { setVozActiva(false); setTimeout(() => campo.current?.focus(), 60) }}
           />
         )}
