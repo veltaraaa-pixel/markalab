@@ -19,7 +19,7 @@ const MIN_VOZ = 350              // voz mínima para que cuente como frase y no 
 const MAX_FRASE = 30000          // una frase no dura más que esto
 const INACTIVIDAD = 12000        // sin hablar → Kala pregunta si siguen
 const ESPERA_RESPUESTA = 8000    // tras preguntar, sin respuesta → se despide
-const AVISO_PENSANDO = 6000      // si tarda, Kala avisa que está trabajando
+const ESPERA_FRASE = 3000        // si la respuesta tarda más, Kala dice una frase a la medida
 const TIEMPO_LIMITE = 120000
 
 type Estado = 'iniciando' | 'escuchando' | 'procesando' | 'hablando' | 'error'
@@ -67,11 +67,12 @@ type Props = {
   sesion: string
   token: string
   obtenerHistorial: () => Turno[]
-  alTurno: (persona: string, kala: string[], rol?: string) => void
+  alPersona: (texto: string) => void
+  alKala: (mensajes: string[], rol?: string) => void
   alTerminar: () => void
 }
 
-export default function KalaVoz({ sesion, token, obtenerHistorial, alTurno, alTerminar }: Props) {
+export default function KalaVoz({ sesion, token, obtenerHistorial, alPersona, alKala, alTerminar }: Props) {
   const [estado, setEstado] = useState<Estado>('iniciando')
   const [ultimo, setUltimo] = useState('')
   const [aviso, setAviso] = useState('')
@@ -149,57 +150,87 @@ export default function KalaVoz({ sesion, token, obtenerHistorial, alTurno, alTe
   }
 
   /* ---------- enviar un turno ---------- */
+  const llamar = (cuerpo: Record<string, unknown>, senal: AbortSignal) =>
+    fetch(ENDPOINT_VOZ, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-markalab-token': TOKEN_SITIO },
+      body: JSON.stringify(cuerpo),
+      signal: senal,
+    }).then((x) => { if (!x.ok) throw new Error('http_' + x.status); return x.json() })
+
   const enviarRef = useRef<(b: Blob) => void>(() => {})
   enviarRef.current = async (blob: Blob) => {
     const s = r.current
     s.preguntado = false
     fijar('procesando')
     setAviso('')
-
-    let avisado = false
-    const pensar = setTimeout(() => {
-      if (s.estado === 'procesando' && !avisado && s.frases.pensando) {
-        avisado = true
-        const a = audioGlobal
-        if (a) { a.onended = null; a.src = 'data:audio/mpeg;base64,' + s.frases.pensando; a.play().catch(() => {}) }
-      }
-    }, AVISO_PENSANDO)
+    const t0 = performance.now()        // Kala empieza a "armar" en cuanto terminaste de hablar
 
     const corte = new AbortController()
     s.peticion = corte
     const limite = setTimeout(() => corte.abort(), TIEMPO_LIMITE)
+    const fin = () => clearTimeout(limite)
 
     try {
-      const audio = await aBase64(blob)
-      const resp = await fetch(ENDPOINT_VOZ, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-markalab-token': TOKEN_SITIO },
-        body: JSON.stringify({
-          accion: 'conversar', session_id: sesion, token,
-          pagina: window.location.pathname,
-          historial: obtenerHistorial().slice(-12),
-          audio, mime: blob.type,
-        }),
-        signal: corte.signal,
-      })
-      clearTimeout(limite); clearTimeout(pensar)
-      if (!s.vivo) return
-      if (!resp.ok) throw new Error('http_' + resp.status)
-      const d = await resp.json()
-      if (audioGlobal && avisado) audioGlobal.pause()
+      // 1. Lo que dijiste, ya limpio: correos en minúsculas y sin acentos
+      const tr = await llamar({ accion: 'transcribir', audio: await aBase64(blob), mime: blob.type }, corte.signal)
+      if (!s.vivo) return fin()
+      const texto = String(tr.texto || '').trim()
+      if (tr.vacio || !texto) { fin(); escuchar(); return }
 
-      // no se entendió nada: se vuelve a escuchar sin hacer ruido
-      if (d.vacio) { escuchar(); return }
+      setUltimo(texto)
+      alPersona(texto)
 
-      s.errores = 0
-      setUltimo(String(d.transcripcion || ''))
-      const mensajes: string[] = Array.isArray(d.mensajes) ? d.mensajes : []
-      alTurno(String(d.transcripcion || ''), mensajes, d.rol)
+      // 2. En paralelo: la respuesta, y una frase de espera hecha con lo que dijiste
+      const corteEspera = new AbortController()
+      let respuesta: { mensajes?: string[]; rol?: string; audio?: string | null } | null = null
+      let audioEspera: string | null = null
+      let esperaSonando = false
+      let tocaEspera = false
 
-      if (d.audio) reproducir(d.audio, escuchar)
-      else escuchar()
+      const tocarEspera = () => {
+        if (respuesta || !audioEspera || esperaSonando || !s.vivo) return
+        const a = audioGlobal
+        if (!a) return
+        esperaSonando = true
+        const alAcabar = () => { esperaSonando = false; if (respuesta) entregar() }
+        a.onended = alAcabar
+        a.onerror = alAcabar
+        a.src = 'data:audio/mpeg;base64,' + audioEspera
+        a.play().catch(() => { esperaSonando = false })
+      }
+
+      const entregar = () => {
+        if (!s.vivo || !respuesta) return
+        if (esperaSonando) return            // termina su frase y luego contesta; cortarla suena feo
+        fin()
+        s.errores = 0
+        const mensajes = Array.isArray(respuesta.mensajes) ? respuesta.mensajes : []
+        alKala(mensajes, respuesta.rol)
+        if (respuesta.audio) reproducir(respuesta.audio, escuchar)
+        else escuchar()
+      }
+
+      llamar({ accion: 'espera', texto }, corteEspera.signal)
+        .then((d) => { audioEspera = d?.audio || null; if (tocaEspera) tocarEspera() })
+        .catch(() => {})
+
+      const reloj = setTimeout(() => { tocaEspera = true; tocarEspera() },
+                               Math.max(0, ESPERA_FRASE - (performance.now() - t0)))
+
+      const d = await llamar({
+        accion: 'responder', session_id: sesion, token, texto,
+        pagina: window.location.pathname,
+        historial: obtenerHistorial().slice(-12),
+      }, corte.signal)
+
+      clearTimeout(reloj)
+      corteEspera.abort()                  // si la frase de espera no llegó a tiempo, ya no hace falta
+      if (!s.vivo) return fin()
+      respuesta = d
+      entregar()
     } catch (e) {
-      clearTimeout(limite); clearTimeout(pensar)
+      fin()
       if (!s.vivo) return
       s.errores += 1
       if (s.errores >= 2) {
