@@ -50,10 +50,14 @@ export default function CtaSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/diagnostico" className="btn-naranja text-base px-8 py-4">
+              <Link href="/demo" className="btn-naranja text-base px-8 py-4">
+                Probar el bot cold caller
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/diagnostico" className="btn-outline text-base px-8 py-4">
                 Agenda tu diagnóstico <ArrowRight size={18} />
               </Link>
-              <a href="/contacto#formulario" className="btn-outline text-base px-8 py-4">
+              <a href="/contacto#formulario" className="btn-outline text-base px-8 py-4 hidden sm:inline-flex">
                 <Phone size={16} />
                56 1123 2604
               </a>

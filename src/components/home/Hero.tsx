@@ -100,12 +100,12 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
             >
-              <Link href="/diagnostico" className="btn-naranja text-base px-8 py-4">
-                Agenda tu diagnóstico gratuito
+              <Link href="/demo" className="btn-naranja text-base px-8 py-4">
+                Escucha la demo del bot cold caller
                 <ArrowRight size={18} />
               </Link>
-              <Link href="/servicios" className="btn-outline text-base px-8 py-4">
-                Ver servicios
+              <Link href="/diagnostico" className="btn-outline text-base px-8 py-4">
+                Agenda tu diagnóstico gratuito
               </Link>
             </motion.div>
 

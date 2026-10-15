@@ -12,6 +12,7 @@ const enlaces = [
   { href: '/', label: 'Inicio' },
   { href: '/servicios', label: 'Servicios' },
   { href: '/nuestra-formula', label: 'Nuestra Fórmula' },
+  { href: '/demo', label: 'Demo en vivo' },
   { href: '/diagnostico', label: 'Diagnóstico' },
   { href: '/contacto', label: 'Contacto' },
 ]

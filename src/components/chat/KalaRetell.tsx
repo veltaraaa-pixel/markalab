@@ -6,18 +6,30 @@ import type { WebCallSession, LiveCallUtterance, SessionHooks } from 'retell-cli
 import Kala from './KalaAvatar'
 
 /* ------------------------------------------------------------------ */
-/*  Modo voz de Kala con Retell                                        */
+/*  Modo voz con Retell                                                */
 /*  Retell escucha, piensa y habla en flujo continuo, como una llamada.*/
-/*  Las decisiones de negocio siguen en n8n: Retell las pide como      */
-/*  funciones al webhook kala-retell.                                  */
+/*                                                                     */
+/*  Dos usos del mismo componente:                                     */
+/*  · Kala, la asistente del sitio (abrirLlamada)                      */
+/*  · la demo del Cold Caller (abrirLlamadaDemo), con su propio agente */
+/*    y los datos que el visitante acaba de dejar en el formulario     */
 /* ------------------------------------------------------------------ */
 
 const PUBLIC_KEY = process.env.NEXT_PUBLIC_RETELL_PUBLIC_KEY || ''
 const AGENT_ID = process.env.NEXT_PUBLIC_RETELL_AGENT_ID || ''
+const AGENT_DEMO_ID = process.env.NEXT_PUBLIC_RETELL_AGENT_DEMO_ID || ''
+
+function navegadorListo() {
+  if (typeof window === 'undefined') return false
+  return !!navigator.mediaDevices?.getUserMedia
+}
 
 export function retellDisponible() {
-  if (typeof window === 'undefined') return false
-  return !!PUBLIC_KEY && !!AGENT_ID && !!navigator.mediaDevices?.getUserMedia
+  return navegadorListo() && !!PUBLIC_KEY && !!AGENT_ID
+}
+
+export function demoDisponible() {
+  return navegadorListo() && !!PUBLIC_KEY && !!AGENT_DEMO_ID
 }
 
 export type TurnoVoz = { rol: 'user' | 'agent'; texto: string }
@@ -36,12 +48,8 @@ const puente: Puente = {}
 
 let cliente: RetellClient | null = null
 
-/* Se llama DENTRO del toque al micrófono: los navegadores solo permiten
-   abrir el micrófono y reproducir audio a partir de una acción del usuario. */
-export function abrirLlamada(sesion: string, token: string): WebCallSession {
-  if (!cliente) cliente = new RetellClient({ key: PUBLIC_KEY })
-  const ahora = new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })
-  const hooks: SessionHooks = {
+function hooks(): SessionHooks {
+  return {
     onStatus: (s) => puente.estado?.(s),
     onTranscript: (t) => puente.transcript?.(t),
     onAgentStartTalking: () => puente.habla?.(true),
@@ -50,15 +58,45 @@ export function abrirLlamada(sesion: string, token: string): WebCallSession {
     onEnd: () => puente.fin?.(),
     onError: (e) => puente.error?.(e),
   }
+}
+
+function ahoraCDMX() {
+  return new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })
+}
+
+/* Se llama DENTRO del toque al micrófono: los navegadores solo permiten
+   abrir el micrófono y reproducir audio a partir de una acción del usuario. */
+export function abrirLlamada(sesion: string, token: string): WebCallSession {
+  if (!cliente) cliente = new RetellClient({ key: PUBLIC_KEY })
   return cliente.createWebCall({
     agent_id: AGENT_ID,
-    // metadata solo la lee n8n; el modelo no la ve. Ahí viaja el token del cliente.
     metadata: { session_id: sesion, token, pagina: window.location.pathname },
-    // estas sí las ve el modelo: nada sensible
-    retell_llm_dynamic_variables: { pagina: window.location.pathname, fecha_hora: ahora },
+    retell_llm_dynamic_variables: { pagina: window.location.pathname, fecha_hora: ahoraCDMX() },
     transcript: true,
     audio: { emitRawAudioSamples: true },
-    hooks,
+    hooks: hooks(),
+  })
+}
+
+/* Demo del Cold Caller. Las variables salen del formulario que la persona
+   acaba de llenar: Kala la saluda por su nombre y sabe de qué empresa es.
+   Lo demás (el giro, el papel que debe jugar) lo pregunta en la llamada. */
+export function abrirLlamadaDemo(
+  sesion: string,
+  variables: Record<string, string>
+): WebCallSession {
+  if (!cliente) cliente = new RetellClient({ key: PUBLIC_KEY })
+  const limpias: Record<string, string> = {}
+  Object.entries(variables).forEach(([clave, valor]) => {
+    limpias[clave] = String(valor ?? '').slice(0, 600)
+  })
+  return cliente.createWebCall({
+    agent_id: AGENT_DEMO_ID,
+    metadata: { session_id: sesion, demo: 'cold_caller', pagina: window.location.pathname },
+    retell_llm_dynamic_variables: { ...limpias, fecha_hora: ahoraCDMX() },
+    transcript: true,
+    audio: { emitRawAudioSamples: true },
+    hooks: hooks(),
   })
 }
 
@@ -68,9 +106,18 @@ type Estado = 'conectando' | 'escuchando' | 'hablando' | 'error'
 type Props = {
   llamada: WebCallSession
   alTerminar: (turnos: TurnoVoz[]) => void
+  /** Encabezado de la pantalla. Por omisión, el de Kala. */
+  titulo?: string
+  /** Nombre que aparece en "X está hablando". */
+  nombreAgente?: string
 }
 
-export default function KalaRetell({ llamada, alTerminar }: Props) {
+export default function KalaRetell({
+  llamada,
+  alTerminar,
+  titulo = 'Llamada con Kala',
+  nombreAgente = 'Kala',
+}: Props) {
   const [estado, setEstado] = useState<Estado>('conectando')
   const [subtitulo, setSubtitulo] = useState('')
   const [aviso, setAviso] = useState('')
@@ -105,8 +152,6 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
       setEstado(si ? 'hablando' : 'escuchando')
     }
     puente.audio = (muestras) => {
-      // el audio que llega es la voz de Kala: anima el anillo y, si el SDK no
-      // avisa cuándo habla, se deduce del volumen
       let s = 0
       for (let i = 0; i < muestras.length; i++) s += muestras[i] * muestras[i]
       const rms = Math.sqrt(s / Math.max(muestras.length, 1))
@@ -120,10 +165,9 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
       setEstado('error')
       setAviso(m.includes('permission') || m.includes('notallowed')
         ? 'Necesito permiso para usar tu micrófono. Puedes darlo desde el candado de la barra de direcciones.'
-        : 'No pude conectar la llamada. Seguimos por escrito.')
+        : 'No pude conectar la llamada. Intenta de nuevo en un momento.')
       setTimeout(terminar, 2600)
     }
-    // si la llamada ya estaba en vivo antes de conectar el puente
     if (llamada.status === 'live') setEstado('escuchando')
     if (llamada.status === 'ended') terminar()
 
@@ -131,7 +175,6 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
       Object.keys(puente).forEach((k) => { delete (puente as Record<string, unknown>)[k] })
       if (llamada.status !== 'ended') llamada.end().catch(() => {})
     }
-    // una sola vez por llamada
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -145,7 +188,7 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
   const TEXTO: Record<Estado, string> = {
     conectando: 'Conectando…',
     escuchando: silenciado ? 'Micrófono en silencio' : 'Te escucho…',
-    hablando: 'Kala está hablando',
+    hablando: `${nombreAgente} está hablando`,
     error: '',
   }
 
@@ -154,7 +197,7 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
       onClick={() => { llamada.startAudioPlayback().catch(() => {}) }}
       className="absolute inset-0 z-10 flex flex-col items-center justify-between bg-[#1E2A4A] px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-8 text-white"
     >
-      <p className="text-xs uppercase tracking-[0.2em] text-white/45">Llamada con Kala</p>
+      <p className="text-xs uppercase tracking-[0.2em] text-white/45">{titulo}</p>
 
       <div className="flex flex-col items-center">
         <div ref={anillo} className={`kala-rt-anillo kala-rt-${estado} relative grid h-44 w-44 place-items-center rounded-full`}>
