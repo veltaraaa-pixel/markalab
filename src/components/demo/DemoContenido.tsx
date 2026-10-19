@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { PhoneCall, MessageSquareQuote, Repeat2 } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import DemoFormulario, { type DatosDemo } from './DemoFormulario'
+import VerificarCodigo from './VerificarCodigo'
 
 /* ------------------------------------------------------------------ */
 /*  Demo del Cold Caller · captura                                     */
@@ -37,6 +38,8 @@ export default function DemoContenido() {
   const router = useRouter()
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
+  // Cuando el correo no es del equipo, hay un paso intermedio de verificación
+  const [pendiente, setPendiente] = useState<{ correo: string; minutos: number } | null>(null)
 
   const enviar = async (formulario: DatosDemo) => {
     setError('')
@@ -49,7 +52,11 @@ export default function DemoContenido() {
       })
       const cuerpo = await respuesta.json()
       if (!respuesta.ok) {
-        setError(cuerpo?.error || 'No pudimos desbloquear el número. Intenta de nuevo.')
+        setError(cuerpo?.error || 'No pudimos abrir la demo. Intenta de nuevo.')
+        return
+      }
+      if (cuerpo.acceso === 'por_token') {
+        setPendiente({ correo: cuerpo.correo, minutos: cuerpo.minutos || 15 })
         return
       }
       router.push('/demo/gracias')
@@ -113,7 +120,16 @@ export default function DemoContenido() {
       <section id="desbloquear" className="bg-crema py-14 md:py-20">
         <div className="container mx-auto px-4 md:px-6">
           <div className="mx-auto max-w-2xl">
-            <DemoFormulario alEnviar={enviar} error={error} enviando={enviando} />
+            {pendiente ? (
+              <VerificarCodigo
+                correo={pendiente.correo}
+                minutos={pendiente.minutos}
+                alVerificar={() => router.push('/demo/gracias')}
+                alVolver={() => { setPendiente(null); setError('') }}
+              />
+            ) : (
+              <DemoFormulario alEnviar={enviar} error={error} enviando={enviando} />
+            )}
           </div>
         </div>
       </section>
