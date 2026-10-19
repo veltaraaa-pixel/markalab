@@ -112,7 +112,11 @@ export async function POST(peticion: NextRequest) {
     peticion.headers.get('x-real-ip') ||
     'desconocida'
 
-  if (excedeRitmo(ip)) {
+  const directo = esInterno(datos.correo)
+
+  // El límite por IP está para que nadie queme minutos de voz ni correos.
+  // El equipo no es esa amenaza y necesita poder probar cuantas veces quiera.
+  if (!directo && excedeRitmo(ip)) {
     return NextResponse.json(
       {
         error:
@@ -123,8 +127,6 @@ export async function POST(peticion: NextRequest) {
   }
 
   const sesion = `demo_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
-
-  const directo = esInterno(datos.correo)
 
   const payload = {
     evento: 'demo_cold_caller',
