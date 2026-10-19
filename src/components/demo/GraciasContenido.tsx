@@ -77,7 +77,7 @@ export default function GraciasContenido({ nombre, empresa }: Props) {
         return
       }
 
-      const sesionVoz = retell.abrirLlamadaDemo(leerCookie('ml_demo_sesion') || 'demo', {
+      const sesionVoz = retell.abrirLlamadaDemo(leerCookie('ml_demo_id') || 'demo', {
         name: nombre,
         business: empresa,
         nota: leerCookie('ml_demo_nota'),
@@ -92,12 +92,20 @@ export default function GraciasContenido({ nombre, empresa }: Props) {
     }
   }
 
-  const terminarLlamada = (_turnos: TurnoVoz[]) => {
+  const terminarLlamada = (turnos: TurnoVoz[], motivo?: string) => {
     setLlamada(null)
+    if (motivo) {
+      // Se cayó: no la damos por escuchada ni bajamos al calendario
+      setErrorLlamada(motivo)
+      return
+    }
     setYaHablo(true)
-    setTimeout(() => {
-      document.getElementById('agendar')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 400)
+    // Solo bajamos al calendario si de verdad conversó
+    if (turnos.length > 1) {
+      setTimeout(() => {
+        document.getElementById('agendar')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 400)
+    }
   }
 
   const agendar = async () => {
