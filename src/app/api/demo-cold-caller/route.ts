@@ -182,6 +182,7 @@ export async function POST(peticion: NextRequest) {
     httpOnly: false, sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production', path: '/', maxAge: 60 * 60 * 3,
   }
+  respuesta.cookies.set('ml_demo_id', sesion, publica)
   respuesta.cookies.set('ml_demo_nombre', encodeURIComponent(datos.nombre.split(' ')[0]), publica)
   respuesta.cookies.set('ml_demo_empresa', encodeURIComponent(datos.empresa), publica)
   respuesta.cookies.set('ml_demo_nota', encodeURIComponent(datos.nota.slice(0, 300)), publica)
