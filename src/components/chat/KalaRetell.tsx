@@ -46,17 +46,38 @@ type Puente = {
 }
 const puente: Puente = {}
 
+/* Retell puede fallar antes de que el componente alcance a montarse, y ese
+   evento se perdía: por eso la llamada se cerraba sola y sin explicación.
+   Ahora se guardan en cola y el componente los consume al montar. */
+type Evento = { tipo: keyof Puente; dato: unknown }
+let cola: Evento[] = []
+
+function emitir(tipo: keyof Puente, dato?: unknown) {
+  const fn = puente[tipo] as ((d: unknown) => void) | undefined
+  if (fn) fn(dato)
+  else cola.push({ tipo, dato })
+}
+
+export function vaciarCola() {
+  const pendientes = cola
+  cola = []
+  pendientes.forEach(({ tipo, dato }) => {
+    const fn = puente[tipo] as ((d: unknown) => void) | undefined
+    fn?.(dato)
+  })
+}
+
 let cliente: RetellClient | null = null
 
 function hooks(): SessionHooks {
   return {
-    onStatus: (s) => puente.estado?.(s),
-    onTranscript: (t) => puente.transcript?.(t),
-    onAgentStartTalking: () => puente.habla?.(true),
-    onAgentStopTalking: () => puente.habla?.(false),
-    onAudio: (m) => puente.audio?.(m),
-    onEnd: () => puente.fin?.(),
-    onError: (e) => puente.error?.(e),
+    onStatus: (s) => emitir('estado', s),
+    onTranscript: (t) => emitir('transcript', t),
+    onAgentStartTalking: () => emitir('habla', true),
+    onAgentStopTalking: () => emitir('habla', false),
+    onAudio: (m) => emitir('audio', m),
+    onEnd: () => emitir('fin'),
+    onError: (e) => { console.error('[Kala] Retell devolvió un error:', e); emitir('error', e) },
   }
 }
 
@@ -105,7 +126,8 @@ type Estado = 'conectando' | 'escuchando' | 'hablando' | 'error'
 
 type Props = {
   llamada: WebCallSession
-  alTerminar: (turnos: TurnoVoz[]) => void
+  /** motivo llega con texto solo cuando la llamada se cayó por un error */
+  alTerminar: (turnos: TurnoVoz[], motivo?: string) => void
   /** Encabezado de la pantalla. Por omisión, el de Kala. */
   titulo?: string
   /** Nombre que aparece en "X está hablando". */
@@ -129,10 +151,12 @@ export default function KalaRetell({
   const hablaPorEvento = useRef(false)
   const nivelSuave = useRef(0)
 
+  const motivo = useRef<string>('')
+
   const terminar = () => {
     if (cerrado.current) return
     cerrado.current = true
-    alTerminar(turnos.current)
+    alTerminar(turnos.current, motivo.current || undefined)
   }
 
   useEffect(() => {
