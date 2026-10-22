@@ -62,7 +62,7 @@ export default function Footer() {
                 <Instagram size={16} />
               </a>
               <a
-                href="https://www.facebook.com/profile.php?id=61575445052149"
+               href="https://www.facebook.com/profile.php?id=61594134230430&locale=es_LA"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
@@ -132,7 +132,7 @@ export default function Footer() {
               <li>
                 <a href="mailto:comercial@markalab.com.mx" className="flex items-start gap-3 text-white/70 hover:text-[#E8621A] transition-colors text-sm group">
                   <Mail size={16} className="mt-0.5 shrink-0 group-hover:text-[#E8621A]" />
-                  comercial@markalab.com.mx
+                  oscar.esperon@markalab.com.mx
                 </a>
               </li>
               <li>
