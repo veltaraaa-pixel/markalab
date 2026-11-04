@@ -59,3 +59,87 @@ body {
     @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
 }
+
+/* ============================================================
+   Landing Soluciones IT (/soluciones-it)
+   ============================================================ */
+.it-grid-bg {
+  background-image:
+    linear-gradient(rgba(74, 124, 199, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 124, 199, 0.08) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 40%, transparent 100%);
+}
+
+.it-text-gradient {
+  background: linear-gradient(100deg, #E8621A 0%, #FF9A5C 45%, #7FA8E8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Tarjeta con luz que sigue al cursor (usa --mx / --my) */
+.it-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.it-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(232, 98, 26, 0.16), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+.it-spotlight:hover::before { opacity: 1; }
+
+/* Borde animado con gradiente cónico */
+@property --it-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.it-border-anim {
+  position: relative;
+  background: #0F1830;
+  border-radius: 1.5rem;
+}
+.it-border-anim::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--it-angle), transparent 0deg, #E8621A 60deg, #4A7CC7 140deg, transparent 220deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: it-spin 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes it-spin { to { --it-angle: 360deg; } }
+
+.it-marquee { animation: it-marquee 40s linear infinite; }
+.it-marquee-rev { animation: it-marquee 46s linear infinite reverse; }
+.it-marquee-wrap:hover .it-marquee,
+.it-marquee-wrap:hover .it-marquee-rev { animation-play-state: paused; }
+@keyframes it-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.it-caret { animation: it-blink 1s steps(2) infinite; }
+@keyframes it-blink { 50% { opacity: 0; } }
+
+.it-range { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.12); outline: none; }
+.it-range::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #E8621A; box-shadow: 0 0 0 6px rgba(232,98,26,0.2); cursor: pointer; transition: box-shadow .2s; }
+.it-range::-webkit-slider-thumb:hover { box-shadow: 0 0 0 10px rgba(232,98,26,0.25); }
+.it-range::-moz-range-thumb { width: 22px; height: 22px; border: none; border-radius: 50%; background: #E8621A; cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  .it-marquee, .it-marquee-rev, .it-border-anim::after, .it-caret { animation: none !important; }
+}

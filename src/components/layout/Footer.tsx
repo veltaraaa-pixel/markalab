@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Phone, Mail, MapPin, Globe, Instagram, Facebook, Youtube } from 'lucide-react'
 
 const enlaces = [
@@ -38,14 +39,15 @@ export default function Footer() {
 
           {/* Columna 1: Logo y descripción */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-1 mb-4">
-              <span className="text-2xl font-black text-white">Marka</span>
-              <span className="text-2xl font-black text-[#E8621A]">Lab</span>
-              <span className="ml-0.5 w-3 h-3 bg-[#E8621A] rounded-full inline-block" />
+            <Link href="/" className="inline-block mb-6">
+              <Image
+                src="/logo-markalab-claro.png"
+                alt="MarkaLab · Marketing and Sales Consulting"
+                width={223}
+                height={59}
+                className="h-12 w-auto"
+              />
             </Link>
-            <p className="text-xs font-medium tracking-widest text-white/50 uppercase mb-4">
-              Marketing and Sales Consulting
-            </p>
             <p className="text-white/70 text-sm leading-relaxed mb-6">
               Transformamos negocios a través de estrategias comerciales inteligentes,
               tecnología de punta e implementación ágil orientada a resultados.
@@ -62,7 +64,7 @@ export default function Footer() {
                 <Instagram size={16} />
               </a>
               <a
-               href="https://www.facebook.com/profile.php?id=61594134230430&locale=es_LA"
+                href="https://www.facebook.com/profile.php?id=61575445052149"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
@@ -132,7 +134,7 @@ export default function Footer() {
               <li>
                 <a href="mailto:comercial@markalab.com.mx" className="flex items-start gap-3 text-white/70 hover:text-[#E8621A] transition-colors text-sm group">
                   <Mail size={16} className="mt-0.5 shrink-0 group-hover:text-[#E8621A]" />
-                  oscar.esperon@markalab.com.mx
+                  comercial@markalab.com.mx
                 </a>
               </li>
               <li>

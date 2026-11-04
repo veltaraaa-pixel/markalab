@@ -1,0 +1,19 @@
+SUBPAGINA /soluciones-it  -  MarkaLab v6.1
+
+Copia el contenido de esta carpeta (src y public) en la raiz del repositorio
+aiops-markalab/markalab, aceptando reemplazar archivos. Las rutas ya coinciden.
+
+NUEVOS
+  src/app/soluciones-it/page.tsx
+  src/components/it/  (9 archivos)
+  public/logo-markalab.png
+  public/logo-markalab-claro.png
+
+REEMPLAZAN A LOS EXISTENTES
+  src/app/globals.css               estilos it-* al final
+  src/app/sitemap.ts                agrega /soluciones-it
+  src/components/layout/Navbar.tsx  logo transparente claro/original + ruta oscura
+  src/components/layout/Footer.tsx  logo claro en el pie
+
+No hay dependencias nuevas ni variables de entorno nuevas.
+Al hacer commit y push, Vercel publica en: https://www.markalab.com.mx/soluciones-it

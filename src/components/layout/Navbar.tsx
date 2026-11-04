@@ -12,13 +12,12 @@ const enlaces = [
   { href: '/', label: 'Inicio' },
   { href: '/servicios', label: 'Servicios' },
   { href: '/nuestra-formula', label: 'Nuestra Fórmula' },
-  { href: '/demo', label: 'Demo en vivo' },
   { href: '/diagnostico', label: 'Diagnóstico' },
   { href: '/contacto', label: 'Contacto' },
 ]
 
 // Rutas cuyo hero tiene fondo azul oscuro: ahí el nav debe ir en color crema
-const rutasHeroOscuro = ['/servicios', '/nuestra-formula', '/diagnostico', '/contacto']
+const rutasHeroOscuro = ['/servicios', '/nuestra-formula', '/diagnostico', '/contacto', '/soluciones-it']
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -51,12 +50,13 @@ export default function Navbar() {
       <nav className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center group">
+          {/* Logo transparente: versión clara sobre fondos oscuros, original sobre fondos claros */}
           <Image
-            src="/logo-markalab.jpg"
+            src={textoClaro ? '/logo-markalab-claro.png' : '/logo-markalab.png'}
             alt="MarkaLab"
-            width={150}
-            height={55}
-            className="h-12 w-auto"
+            width={223}
+            height={59}
+            className="h-11 w-auto"
             priority
           />
         </Link>
