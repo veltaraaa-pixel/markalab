@@ -119,8 +119,8 @@ export default function CierreIT() {
               Cotizar por WhatsApp
             </a>
           </div>
-          <a href="mailto:comercial@markalab.com.mx" className="mt-8 inline-flex items-center gap-2 text-sm text-white/45 transition-colors hover:text-[#FF9A5C]">
-            <Mail size={14} /> comercial@markalab.com.mx
+          <a href="mailto:marketing@markalab.com.mx" className="mt-8 inline-flex items-center gap-2 text-sm text-white/45 transition-colors hover:text-[#FF9A5C]">
+            <Mail size={14} /> marketing@markalab.com.mx
           </a>
         </motion.div>
       </section>

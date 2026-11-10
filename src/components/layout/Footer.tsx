@@ -132,9 +132,9 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="mailto:comercial@markalab.com.mx" className="flex items-start gap-3 text-white/70 hover:text-[#E8621A] transition-colors text-sm group">
+                <a href="mailto:marketing@markalab.com.mx" className="flex items-start gap-3 text-white/70 hover:text-[#E8621A] transition-colors text-sm group">
                   <Mail size={16} className="mt-0.5 shrink-0 group-hover:text-[#E8621A]" />
-                  comercial@markalab.com.mx
+                  marketing@markalab.com.mx
                 </a>
               </li>
               <li>

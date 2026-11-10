@@ -1,19 +1,13 @@
-SUBPAGINA /soluciones-it  -  MarkaLab v6.1
+MARKALAB v6.2 - LISTO PARA SUBIR
 
-Copia el contenido de esta carpeta (src y public) en la raiz del repositorio
-aiops-markalab/markalab, aceptando reemplazar archivos. Las rutas ya coinciden.
+Descomprime este zip en la raiz del repositorio aiops-markalab/markalab
+y acepta reemplazar archivos. Luego commit y push: Vercel publica solo.
 
-NUEVOS
-  src/app/soluciones-it/page.tsx
-  src/components/it/  (9 archivos)
-  public/logo-markalab.png
-  public/logo-markalab-claro.png
+Incluye todo lo que cambio desde la v6.0:
+- Landing /soluciones-it (src/app/soluciones-it y src/components/it)
+- Logo transparente (public/logo-markalab.png y logo-markalab-claro.png), Navbar y Footer
+- Aviso de privacidad con Oscar Fernando Esperon Vallejo y RFC EEVO641226NY2
+- Correo marketing@markalab.com.mx en todo el sitio (antes comercial@)
+- globals.css y sitemap.ts
 
-REEMPLAZAN A LOS EXISTENTES
-  src/app/globals.css               estilos it-* al final
-  src/app/sitemap.ts                agrega /soluciones-it
-  src/components/layout/Navbar.tsx  logo transparente claro/original + ruta oscura
-  src/components/layout/Footer.tsx  logo claro en el pie
-
-No hay dependencias nuevas ni variables de entorno nuevas.
-Al hacer commit y push, Vercel publica en: https://www.markalab.com.mx/soluciones-it
+Sin dependencias ni variables de entorno nuevas.

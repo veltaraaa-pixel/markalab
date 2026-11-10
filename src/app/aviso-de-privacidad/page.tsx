@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-const ACTUALIZADO = '6 de octubre de 2026'
+const ACTUALIZADO = '10 de noviembre de 2026'
 
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
@@ -38,13 +38,15 @@ export default function AvisoDePrivacidad() {
       <main className="mx-auto max-w-3xl px-4 py-16 md:px-6">
         <Seccion titulo="Quién es responsable de tus datos">
           <p>
-            <strong>MarkaLab</strong>, con domicilio en Jardines del Pedregal, Ciudad de México,
-            es responsable del tratamiento de los datos personales que nos proporcionas.
+            <strong>MarkaLab</strong> es el nombre comercial bajo el que opera{' '}
+            <strong>Oscar Fernando Esperón Vallejo</strong>, con RFC{' '}
+            <strong>EEVO641226NY2</strong> y domicilio en Jardines del Pedregal, Ciudad de México,
+            quien es responsable del tratamiento de los datos personales que nos proporcionas.
           </p>
           <p>
             Para cualquier tema relacionado con este aviso puedes escribirnos a{' '}
-            <a href="mailto:comercial@markalab.com.mx" className="font-medium text-[#E8621A] underline">
-              comercial@markalab.com.mx
+            <a href="mailto:marketing@markalab.com.mx" className="font-medium text-[#E8621A] underline">
+              marketing@markalab.com.mx
             </a>
             .
           </p>
@@ -82,8 +84,8 @@ export default function AvisoDePrivacidad() {
           </ul>
           <p>
             Si no quieres que usemos tus datos para las finalidades adicionales, escríbenos a{' '}
-            <a href="mailto:comercial@markalab.com.mx" className="font-medium text-[#E8621A] underline">
-              comercial@markalab.com.mx
+            <a href="mailto:marketing@markalab.com.mx" className="font-medium text-[#E8621A] underline">
+              marketing@markalab.com.mx
             </a>{' '}
             en cualquier momento.
           </p>
@@ -147,8 +149,8 @@ export default function AvisoDePrivacidad() {
           </p>
           <p>
             Para ejercerlos, envía tu solicitud a{' '}
-            <a href="mailto:comercial@markalab.com.mx" className="font-medium text-[#E8621A] underline">
-              comercial@markalab.com.mx
+            <a href="mailto:marketing@markalab.com.mx" className="font-medium text-[#E8621A] underline">
+              marketing@markalab.com.mx
             </a>{' '}
             incluyendo tu nombre, un medio para contactarte, la descripción clara de lo que pides y
             un documento que acredite tu identidad.

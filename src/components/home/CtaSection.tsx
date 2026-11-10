@@ -50,14 +50,10 @@ export default function CtaSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/demo" className="btn-naranja text-base px-8 py-4">
-                Probar el bot cold caller
-                <ArrowRight size={18} />
-              </Link>
-              <Link href="/diagnostico" className="btn-outline text-base px-8 py-4">
+              <Link href="/diagnostico" className="btn-naranja text-base px-8 py-4">
                 Agenda tu diagnóstico <ArrowRight size={18} />
               </Link>
-              <a href="/contacto#formulario" className="btn-outline text-base px-8 py-4 hidden sm:inline-flex">
+              <a href="/contacto#formulario" className="btn-outline text-base px-8 py-4">
                 <Phone size={16} />
                56 1123 2604
               </a>
@@ -69,9 +65,9 @@ export default function CtaSection() {
                 <Phone size={14} />
                 +52 56 1123 2604
               </a>
-              <a href="mailto:comercial@markalab.com.mx" className="flex items-center gap-2 text-sm text-[#1E2A4A]/60 hover:text-[#E8621A] transition-colors">
+              <a href="mailto:marketing@markalab.com.mx" className="flex items-center gap-2 text-sm text-[#1E2A4A]/60 hover:text-[#E8621A] transition-colors">
                 <Mail size={14} />
-                comercial@markalab.com.mx
+                marketing@markalab.com.mx
               </a>
             </div>
           </motion.div>
