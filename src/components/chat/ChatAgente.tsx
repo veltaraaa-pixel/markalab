@@ -206,8 +206,8 @@ export default function ChatAgente() {
         const abortado = e instanceof DOMException && e.name === 'AbortError'
         setError(
           abortado
-            ? 'La respuesta tardó demasiado. Escríbenos a comercial@markalab.com.mx y te contactamos hoy mismo.'
-            : 'No pude conectar con el asistente. Intenta de nuevo o escríbenos a comercial@markalab.com.mx.'
+            ? 'La respuesta tardó demasiado. Escríbenos a marketing@markalab.com.mx y te contactamos hoy mismo.'
+            : 'No pude conectar con el asistente. Intenta de nuevo o escríbenos a marketing@markalab.com.mx.'
         )
       } finally {
         setEscribiendo(false)

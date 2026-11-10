@@ -120,7 +120,7 @@ export default function VerificarCodigo({ correo, minutos, alVerificar, alVolver
 
       <p className="mt-6 text-xs leading-relaxed text-azul-oscuro/40">
         ¿No llegó? Revisa la carpeta de no deseados. Si tampoco está ahí, escríbenos a
-        comercial@markalab.com.mx.
+        marketing@markalab.com.mx.
       </p>
     </motion.div>
   )

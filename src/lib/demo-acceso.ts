@@ -10,6 +10,7 @@ import { createHash } from 'crypto'
 const INTERNOS = [
   'oscar.esperon@markalab.com.mx',
   'sistemas@markalab.com.mx',
+  'marketing@markalab.com.mx',
   'comercial@markalab.com.mx',
 ]
 

@@ -72,7 +72,7 @@ export default function GraciasContenido({ nombre, empresa }: Props) {
 
       if (!retell || !retell.demoDisponible()) {
         setErrorLlamada(
-          'La demo necesita micrófono y un navegador reciente. Escríbenos a comercial@markalab.com.mx y lo vemos por teléfono.'
+          'La demo necesita micrófono y un navegador reciente. Escríbenos a marketing@markalab.com.mx y lo vemos por teléfono.'
         )
         return
       }
@@ -366,7 +366,7 @@ export default function GraciasContenido({ nombre, empresa }: Props) {
             </div>
 
             <p className="mt-6 text-center text-xs text-azul-oscuro/40">
-              ¿Prefieres escribirnos? comercial@markalab.com.mx
+              ¿Prefieres escribirnos? marketing@markalab.com.mx
             </p>
           </div>
         </div>

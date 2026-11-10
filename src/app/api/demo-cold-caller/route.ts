@@ -120,7 +120,7 @@ export async function POST(peticion: NextRequest) {
     return NextResponse.json(
       {
         error:
-          'Ya probaste la demo hace poco. Si quieres verla otra vez, espera unos minutos o escríbenos a comercial@markalab.com.mx.',
+          'Ya probaste la demo hace poco. Si quieres verla otra vez, espera unos minutos o escríbenos a marketing@markalab.com.mx.',
       },
       { status: 429 }
     )
@@ -191,7 +191,7 @@ export async function POST(peticion: NextRequest) {
   if (!URL_TOKEN) {
     console.error('[demo] Falta N8N_DEMO_TOKEN_URL')
     return NextResponse.json(
-      { error: 'No pudimos enviarte el código. Escríbenos a comercial@markalab.com.mx.' },
+      { error: 'No pudimos enviarte el código. Escríbenos a marketing@markalab.com.mx.' },
       { status: 502 }
     )
   }

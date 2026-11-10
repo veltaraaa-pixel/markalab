@@ -98,7 +98,7 @@ export async function POST(peticion: NextRequest) {
     return NextResponse.json(
       {
         error:
-          'Llegamos al límite de esta conversación. Escríbenos a comercial@markalab.com.mx y seguimos por ahí.',
+          'Llegamos al límite de esta conversación. Escríbenos a marketing@markalab.com.mx y seguimos por ahí.',
       },
       { status: 429 }
     )

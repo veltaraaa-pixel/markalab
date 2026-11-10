@@ -59,7 +59,7 @@ export async function POST(peticion: NextRequest) {
   if (!URL_N8N) {
     console.error('[demo] Falta N8N_DEMO_CITA_URL')
     return NextResponse.json(
-      { error: 'No pudimos agendar en este momento. Escríbenos a comercial@markalab.com.mx.' },
+      { error: 'No pudimos agendar en este momento. Escríbenos a marketing@markalab.com.mx.' },
       { status: 502 }
     )
   }
@@ -102,7 +102,7 @@ export async function POST(peticion: NextRequest) {
   } catch (e) {
     console.error('[demo] CITA SIN GUARDAR, recupérala de este log:', JSON.stringify(payload), e)
     return NextResponse.json(
-      { error: 'No pudimos confirmar la cita. Escríbenos a comercial@markalab.com.mx y la apartamos.' },
+      { error: 'No pudimos confirmar la cita. Escríbenos a marketing@markalab.com.mx y la apartamos.' },
       { status: 502 }
     )
   }

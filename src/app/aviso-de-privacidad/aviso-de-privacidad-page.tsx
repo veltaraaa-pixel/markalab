@@ -43,8 +43,8 @@ export default function AvisoDePrivacidad() {
           </p>
           <p>
             Para cualquier tema relacionado con este aviso puedes escribirnos a{' '}
-            <a href="mailto:comercial@markalab.com.mx" className="font-medium text-[#E8621A] underline">
-              comercial@markalab.com.mx
+            <a href="mailto:marketing@markalab.com.mx" className="font-medium text-[#E8621A] underline">
+              marketing@markalab.com.mx
             </a>
             .
           </p>
@@ -82,8 +82,8 @@ export default function AvisoDePrivacidad() {
           </ul>
           <p>
             Si no quieres que usemos tus datos para las finalidades adicionales, escríbenos a{' '}
-            <a href="mailto:comercial@markalab.com.mx" className="font-medium text-[#E8621A] underline">
-              comercial@markalab.com.mx
+            <a href="mailto:marketing@markalab.com.mx" className="font-medium text-[#E8621A] underline">
+              marketing@markalab.com.mx
             </a>{' '}
             en cualquier momento.
           </p>
@@ -147,8 +147,8 @@ export default function AvisoDePrivacidad() {
           </p>
           <p>
             Para ejercerlos, envía tu solicitud a{' '}
-            <a href="mailto:comercial@markalab.com.mx" className="font-medium text-[#E8621A] underline">
-              comercial@markalab.com.mx
+            <a href="mailto:marketing@markalab.com.mx" className="font-medium text-[#E8621A] underline">
+              marketing@markalab.com.mx
             </a>{' '}
             incluyendo tu nombre, un medio para contactarte, la descripción clara de lo que pides y
             un documento que acredite tu identidad.

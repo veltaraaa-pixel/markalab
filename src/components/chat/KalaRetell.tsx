@@ -14,10 +14,17 @@ import Kala from './KalaAvatar'
 
 const PUBLIC_KEY = process.env.NEXT_PUBLIC_RETELL_PUBLIC_KEY || ''
 const AGENT_ID = process.env.NEXT_PUBLIC_RETELL_AGENT_ID || ''
+// Agente de la demo del Cold Caller (/demo/gracias). Es distinto al de Kala del chat.
+const AGENT_DEMO_ID = process.env.NEXT_PUBLIC_RETELL_AGENT_DEMO_ID || ''
 
 export function retellDisponible() {
   if (typeof window === 'undefined') return false
   return !!PUBLIC_KEY && !!AGENT_ID && !!navigator.mediaDevices?.getUserMedia
+}
+
+export function demoDisponible() {
+  if (typeof window === 'undefined') return false
+  return !!PUBLIC_KEY && !!AGENT_DEMO_ID && !!navigator.mediaDevices?.getUserMedia
 }
 
 export type TurnoVoz = { rol: 'user' | 'agent'; texto: string }
@@ -62,15 +69,54 @@ export function abrirLlamada(sesion: string, token: string): WebCallSession {
   })
 }
 
+function hooksDelPuente(): SessionHooks {
+  return {
+    onStatus: (s) => puente.estado?.(s),
+    onTranscript: (t) => puente.transcript?.(t),
+    onAgentStartTalking: () => puente.habla?.(true),
+    onAgentStopTalking: () => puente.habla?.(false),
+    onAudio: (m) => puente.audio?.(m),
+    onEnd: () => puente.fin?.(),
+    onError: (e) => puente.error?.(e),
+  }
+}
+
+/* Llamada de la demo del Cold Caller. Igual que abrirLlamada, se llama dentro
+   del clic del usuario. Los datos del prospecto van como variables dinámicas
+   para que el agente se ponga en el papel de su negocio. */
+export function abrirLlamadaDemo(
+  demoId: string,
+  datos: { name?: string; business?: string; nota?: string }
+): WebCallSession {
+  if (!cliente) cliente = new RetellClient({ key: PUBLIC_KEY })
+  const ahora = new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })
+  return cliente.createWebCall({
+    agent_id: AGENT_DEMO_ID,
+    metadata: { demo_id: demoId, pagina: window.location.pathname },
+    retell_llm_dynamic_variables: {
+      name: datos.name || '',
+      business: datos.business || '',
+      nota: datos.nota || '',
+      fecha_hora: ahora,
+    },
+    transcript: true,
+    audio: { emitRawAudioSamples: true },
+    hooks: hooksDelPuente(),
+  })
+}
+
 /* ------------------------------------------------------------------ */
 type Estado = 'conectando' | 'escuchando' | 'hablando' | 'error'
 
 type Props = {
   llamada: WebCallSession
-  alTerminar: (turnos: TurnoVoz[]) => void
+  /** `motivo` llega solo si la llamada se cayó por un error. */
+  alTerminar: (turnos: TurnoVoz[], motivo?: string) => void
+  titulo?: string
+  nombreAgente?: string
 }
 
-export default function KalaRetell({ llamada, alTerminar }: Props) {
+export default function KalaRetell({ llamada, alTerminar, titulo = 'Llamada con Kala', nombreAgente = 'Kala' }: Props) {
   const [estado, setEstado] = useState<Estado>('conectando')
   const [subtitulo, setSubtitulo] = useState('')
   const [aviso, setAviso] = useState('')
@@ -82,10 +128,10 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
   const hablaPorEvento = useRef(false)
   const nivelSuave = useRef(0)
 
-  const terminar = () => {
+  const terminar = (motivo?: string) => {
     if (cerrado.current) return
     cerrado.current = true
-    alTerminar(turnos.current)
+    alTerminar(turnos.current, motivo)
   }
 
   useEffect(() => {
@@ -118,10 +164,11 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
     puente.error = (e) => {
       const m = String(e?.message || '').toLowerCase()
       setEstado('error')
-      setAviso(m.includes('permission') || m.includes('notallowed')
+      const texto = m.includes('permission') || m.includes('notallowed')
         ? 'Necesito permiso para usar tu micrófono. Puedes darlo desde el candado de la barra de direcciones.'
-        : 'No pude conectar la llamada. Seguimos por escrito.')
-      setTimeout(terminar, 2600)
+        : 'No pude conectar la llamada. Intenta de nuevo en un momento.'
+      setAviso(texto)
+      setTimeout(() => terminar(texto), 2600)
     }
     // si la llamada ya estaba en vivo antes de conectar el puente
     if (llamada.status === 'live') setEstado('escuchando')
@@ -145,7 +192,7 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
   const TEXTO: Record<Estado, string> = {
     conectando: 'Conectando…',
     escuchando: silenciado ? 'Micrófono en silencio' : 'Te escucho…',
-    hablando: 'Kala está hablando',
+    hablando: `${nombreAgente} está hablando`,
     error: '',
   }
 
@@ -154,7 +201,7 @@ export default function KalaRetell({ llamada, alTerminar }: Props) {
       onClick={() => { llamada.startAudioPlayback().catch(() => {}) }}
       className="absolute inset-0 z-10 flex flex-col items-center justify-between bg-[#1E2A4A] px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-8 text-white"
     >
-      <p className="text-xs uppercase tracking-[0.2em] text-white/45">Llamada con Kala</p>
+      <p className="text-xs uppercase tracking-[0.2em] text-white/45">{titulo}</p>
 
       <div className="flex flex-col items-center">
         <div ref={anillo} className={`kala-rt-anillo kala-rt-${estado} relative grid h-44 w-44 place-items-center rounded-full`}>
