@@ -1,0 +1,10 @@
+car.glb
+Modelo base: autor "vicent091036" en Sketchfab
+https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6
+Obtenido de los ejemplos públicos de three.js (examples/models/gltf), donde se
+publica con crédito a su autor. Revisar en la página de Sketchfab la licencia
+vigente (crédito obligatorio en el pie de la landing).
+
+Cambios hechos por MarkaLab: se quitaron TODOS los emblemas, escudos, tapas
+de rin con logotipo, centro del volante y letreros de marca (delanteros,
+traseros y laterales). Geometría descomprimida de Draco y recomprimida con meshopt.

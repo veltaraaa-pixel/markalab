@@ -140,7 +140,7 @@ export default function Footer() {
               <li>
                 <span className="flex items-start gap-3 text-white/70 text-sm">
                   <MapPin size={16} className="mt-0.5 shrink-0" />
-                  Jardines del Pedregal, CDMX
+                  Jardines de la Montaña, Tlalpan, C.P. 14210, CDMX
                 </span>
               </li>
               <li>

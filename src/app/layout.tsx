@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: '%s | MarkaLab',
   },
   description:
-    'Consultora de Marketing y Ventas en CDMX. Diseñamos e implementamos sistemas comerciales con IA que generan leads, aceleran conversiones y fidelizan clientes. Jardines del Pedregal.',
+    'Consultora de Marketing y Ventas en CDMX. Diseñamos e implementamos sistemas comerciales con IA que generan leads, aceleran conversiones y fidelizan clientes. Jardines de la Montaña, Tlalpan.',
   keywords: [
     'consultoría marketing México',
     'ventas CDMX',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     'automatización ventas',
     'MarkaLab',
     'consultoría comercial',
-    'Jardines del Pedregal',
+    'Tlalpan CDMX',
   ],
   authors: [{ name: 'MarkaLab' }],
   creator: 'MarkaLab',

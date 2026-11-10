@@ -154,8 +154,8 @@ export default function ContactoContenido() {
                   <div className="w-10 h-10 bg-[#E8621A] rounded-full flex items-center justify-center mx-auto mb-3">
                     <MapPin size={20} />
                   </div>
-                  <p className="font-bold">Jardines del Pedregal</p>
-                  <p className="text-white/60 text-sm">Ciudad de México, México</p>
+                  <p className="font-bold">Jardines de la Montaña, Tlalpan</p>
+                  <p className="text-white/60 text-sm">C.P. 14210, Ciudad de México</p>
                 </div>
               </motion.div>
 

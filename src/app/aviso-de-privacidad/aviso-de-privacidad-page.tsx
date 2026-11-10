@@ -38,7 +38,7 @@ export default function AvisoDePrivacidad() {
       <main className="mx-auto max-w-3xl px-4 py-16 md:px-6">
         <Seccion titulo="Quién es responsable de tus datos">
           <p>
-            <strong>MarkaLab</strong>, con domicilio en Jardines del Pedregal, Ciudad de México,
+            <strong>MarkaLab</strong>, con domicilio en Jardines de la Montaña, Tlalpan, C.P. 14210, Ciudad de México,
             es responsable del tratamiento de los datos personales que nos proporcionas.
           </p>
           <p>

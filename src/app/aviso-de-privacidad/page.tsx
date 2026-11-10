@@ -38,16 +38,18 @@ export default function AvisoDePrivacidad() {
       <main className="mx-auto max-w-3xl px-4 py-16 md:px-6">
         <Seccion titulo="Quién es responsable de tus datos">
           <p>
-            <strong>MarkaLab</strong> es el nombre comercial bajo el que opera{' '}
-            <strong>Oscar Fernando Esperón Vallejo</strong>, con RFC{' '}
-            <strong>EEVO641226NY2</strong> y domicilio en Jardines del Pedregal, Ciudad de México,
-            quien es responsable del tratamiento de los datos personales que nos proporcionas.
+            <strong>Oscar Fernando Esperón Vallejo</strong>, quien opera comercialmente bajo la
+            marca <strong>“MarkaLab”</strong> (el «Responsable»), con domicilio en Jardines de la
+            Montaña, Tlalpan, C.P. 14210, Ciudad de México, es responsable del tratamiento de los
+            datos personales que nos proporcionas.
           </p>
           <p>
-            Para cualquier tema relacionado con este aviso puedes escribirnos a{' '}
+            Para cualquier tema relacionado con este aviso, incluido el ejercicio de tus derechos
+            ARCO, puedes escribirnos a{' '}
             <a href="mailto:marketing@markalab.com.mx" className="font-medium text-[#E8621A] underline">
               marketing@markalab.com.mx
-            </a>
+            </a>{' '}
+            o llamarnos al <a href="tel:+525611232604" className="font-medium text-[#E8621A] underline">+52 56 1123 2604</a>
             .
           </p>
         </Seccion>
