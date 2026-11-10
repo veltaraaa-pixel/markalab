@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next'
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.markalab.com.mx'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const rutas = ['', '/servicios', '/nuestra-formula', '/diagnostico', '/contacto', '/soluciones-it', '/aviso-de-privacidad']
+  const rutas = ['', '/servicios', '/nuestra-formula', '/diagnostico', '/contacto', '/soluciones-it', '/talleres', '/aviso-de-privacidad']
 
   return rutas.map((ruta) => ({
     url: `${siteUrl}${ruta}`,

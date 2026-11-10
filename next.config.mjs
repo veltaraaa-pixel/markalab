@@ -26,6 +26,12 @@ const nextConfig = {
 
   // Elimina el header "x-powered-by: Next.js"
   poweredByHeader: false,
+
+  // Landing de Talleres: es un proyecto aparte (markalab-talleres) exportado
+  // como estático en public/talleres/. Esta regla sirve su index.html en /talleres.
+  async rewrites() {
+    return [{ source: '/talleres', destination: '/talleres/index.html' }]
+  },
 }
 
 export default nextConfig
