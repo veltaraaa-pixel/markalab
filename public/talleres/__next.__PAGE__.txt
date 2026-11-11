@@ -1,0 +1,26 @@
+1:"$Sreact.fragment"
+2:"/talleres/_next/static/chunks/1ua2kfq9s-me6.js"
+3:I[39756,["$2"],"default"]
+4:I[37457,["$2"],"default"]
+8:"/talleres/_next/static/chunks/1_bre7brtpt56.js"
+9:"/talleres/_next/static/chunks/1ztuyadkj0r--.js"
+a:I[15,["$2","$8","$9"],"Experience"]
+b:I[97367,["$2"],"OutletBoundary"]
+c:"$Sreact.suspense"
+f:"ViewportBoundary"
+10:I[97367,["$2"],"$f"]
+11:"MetadataBoundary"
+12:I[97367,["$2"],"$11"]
+13:I[27201,["$2"],"IconMark"]
+:HL["/talleres/_next/static/chunks/1rtp5f5mc7zt1.css","style"]
+6:X
+7:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[["$","$La",null,{}],[["$","script","script-0",{"src":"/talleres/_next/static/chunks/1_bre7brtpt56.js","async":true}],["$","script","script-1",{"src":"/talleres/_next/static/chunks/1ztuyadkj0r--.js","async":true}]],["$","$Lb",null,{"children":["$","$c",null,{"name":"Next.MetadataOutlet","children":"$@d"}]}]]}],"p":"$@e","v":null,"s":"$6"}}]]
+0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/talleres/_next/static/chunks/1rtp5f5mc7zt1.css","precedence":"next"}],["$","script","script-0",{"src":"/talleres/_next/static/chunks/1ua2kfq9s-me6.js","async":true}]],["$","html",null,{"lang":"es-MX","className":"XW0vSW_variable -CEqoa_variable","children":["$","body",null,{"children":[["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}],null]}]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L10",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#07090C"}]]}],["$","$L12",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$c",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"El taller que avisa solo · MarkaLab"}],["$","meta","1",{"name":"description","content":"Estatus de servicio por WhatsApp, autorizaciones, agenda y recordatorios para talleres automotrices de alta gama. Conectado a tu ERP y CRM."}],["$","link","2",{"rel":"author","href":"https://www.markalab.com.mx"}],["$","meta","3",{"name":"author","content":"MarkaLab"}],["$","meta","4",{"name":"robots","content":"index, follow"}],["$","link","5",{"rel":"canonical","href":"https://www.markalab.com.mx/talleres/"}],["$","meta","6",{"property":"og:title","content":"El taller que avisa solo"}],["$","meta","7",{"property":"og:description","content":"Cada auto reporta su estatus por WhatsApp. Tu asesor suelta el teléfono."}],["$","meta","8",{"property":"og:site_name","content":"MarkaLab"}],["$","meta","9",{"property":"og:locale","content":"es_MX"}],["$","meta","10",{"property":"og:type","content":"website"}],["$","meta","11",{"name":"twitter:card","content":"summary"}],["$","meta","12",{"name":"twitter:title","content":"El taller que avisa solo"}],["$","meta","13",{"name":"twitter:description","content":"Cada auto reporta su estatus por WhatsApp. Tu asesor suelta el teléfono."}],["$","link","14",{"rel":"icon","href":"/talleres/icon.svg?icon.23rm_o0upaeam.svg","sizes":"any","type":"image/svg+xml"}],["$","$L13","15",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@14","v":null,"s":"$6"}},"a":"$@15","u":"$@16","b":"ZTcICU6rYWz6yttyGeYSp"}
+d:null
+6:300
+16:true
+6:C
+15:0
+5:"$undefined"
+14:"$undefined"
+e:"$undefined"
