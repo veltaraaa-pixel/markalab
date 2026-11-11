@@ -2,4 +2,4 @@
 :HL["/talleres/_next/static/media/Archivo_latin_wdth_wght-s.p.1h4hl0m83hjjz.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/talleres/_next/static/media/JetBrainsMono_latin_wght-s.p.2rmhnsrc80fag.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 1:[["children",{"s":"__PAGE__","h":160}]]
-0:{"b":"ZTcICU6rYWz6yttyGeYSp","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"m0S_yfOl66JkmiOHRtJgu","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
