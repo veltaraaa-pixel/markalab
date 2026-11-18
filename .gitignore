@@ -11,12 +11,12 @@ node_modules/
 dist/
 
 # Environment variables — NUNCA subir .env al repositorio
+# (.env.production SÍ se sube: solo trae las variables públicas NEXT_PUBLIC_ de Kala)
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.production
 
 # Vercel
 .vercel
