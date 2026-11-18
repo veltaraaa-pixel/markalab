@@ -24,7 +24,6 @@ const SUGERENCIAS_CLIENTE = [
 
 const CLAVE_SESION = 'markalab_chat_sesion'
 const CLAVE_TOKEN = 'markalab_chat_token'
-const CLAVE_ROL = 'markalab_chat_rol'
 const CLAVE_HISTORIAL = 'markalab_chat_historial'
 const LIMITE_CARACTERES = 500
 const MENSAJES_DE_CONTEXTO = 12
@@ -105,15 +104,12 @@ export default function ChatAgente() {
         sessionStorage.removeItem(CLAVE_HISTORIAL)
       }
     }
-    // El rol solo se da por bueno si n8n lo confirmó antes en esta pestaña.
-    // Tener un token guardado no basta: podría estar revocado o ser inválido.
-    const verificado = sessionStorage.getItem(CLAVE_ROL) === 'cliente'
-    setEsCliente(verificado)
+    const conToken = !!tokenRef.current
     setMensajes([
       {
         id: nuevoId(),
         autor: 'agente',
-        texto: verificado ? SALUDO_CLIENTE : SALUDO,
+        texto: conToken ? SALUDO_CLIENTE : SALUDO,
       },
     ])
   }, [])
@@ -192,13 +188,7 @@ export default function ChatAgente() {
         }
 
         const datos = await respuesta.json()
-        if (datos?.rol === 'cliente') {
-          setEsCliente(true)
-          sessionStorage.setItem(CLAVE_ROL, 'cliente')
-        } else if (datos?.rol === 'prospecto') {
-          setEsCliente(false)
-          sessionStorage.removeItem(CLAVE_ROL)
-        }
+        if (datos?.rol === 'cliente') setEsCliente(true)
         const globos: string[] = Array.isArray(datos?.mensajes) ? datos.mensajes : []
 
         if (!globos.length) throw new Error('vacio')
@@ -216,8 +206,8 @@ export default function ChatAgente() {
         const abortado = e instanceof DOMException && e.name === 'AbortError'
         setError(
           abortado
-            ? 'La respuesta tardó demasiado. Escríbenos a comercial@markalab.com.mx y te contactamos hoy mismo.'
-            : 'No pude conectar con el asistente. Intenta de nuevo o escríbenos a comercial@markalab.com.mx.'
+            ? 'La respuesta tardó demasiado. Escríbenos a marketing@markalab.com.mx y te contactamos hoy mismo.'
+            : 'No pude conectar con el asistente. Intenta de nuevo o escríbenos a marketing@markalab.com.mx.'
         )
       } finally {
         setEscribiendo(false)
@@ -233,7 +223,7 @@ export default function ChatAgente() {
     sessionStorage.setItem(CLAVE_SESION, sesionRef.current)
     setMensajes([{
       id: nuevoId(), autor: 'agente',
-      texto: esCliente ? SALUDO_CLIENTE : SALUDO,
+      texto: tokenRef.current ? SALUDO_CLIENTE : SALUDO,
     }])
     setError(null)
   }
@@ -359,7 +349,7 @@ export default function ChatAgente() {
 
                 {mostrarSugerencias && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {(esCliente ? SUGERENCIAS_CLIENTE : SUGERENCIAS).map((s) => (
+                    {(tokenRef.current ? SUGERENCIAS_CLIENTE : SUGERENCIAS).map((s) => (
                       <button
                         key={s}
                         type="button"

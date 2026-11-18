@@ -3,7 +3,8 @@ import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import WhatsAppBoton from '@/components/layout/WhatsAppBoton'
-import ChatAgente from '@/components/chat/ChatAgente'
+import KalaWidget from '@/components/chat/KalaWidget'
+import { Analytics } from '@vercel/analytics/next'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.markalab.com.mx'
 
@@ -78,7 +79,9 @@ export default function RootLayout({
         <main>{children}</main>
         <Footer />
         <WhatsAppBoton />
-        <ChatAgente />
+        <KalaWidget />
+        {/* Vercel Web Analytics: visitas y páginas vistas (se activa en el panel de Vercel) */}
+        <Analytics />
       </body>
     </html>
   )

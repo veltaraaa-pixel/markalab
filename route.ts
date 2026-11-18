@@ -1,28 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { esInterno, esDesechable, nuevoCodigo, huella, MINUTOS_VIGENCIA } from '@/lib/demo-acceso'
 
 /**
- * Puente entre el widget de chat y el workflow de n8n.
+ * Captura del prospecto que quiere probar la demo del Cold Caller.
  *
- * El navegador nunca ve la URL del webhook ni el token: solo llama a /api/chat.
- * Aquí se valida el tamaño de la petición, se limita el ritmo por IP y se
- * reenvía al Master Workflow.
+ * Flujo: el visitante deja sus datos -> se avisa al equipo y se guarda en
+ * Supabase -> se desbloquea el numero de la demo con una cookie -> el
+ * visitante marca y conversa con el agente -> en la misma pagina de gracias
+ * puede agendar su diagnostico.
+ *
+ * El navegador nunca ve la URL del webhook ni el token: solo llama aqui.
  */
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60 // Vercel: requiere plan Pro. En Hobby el techo es 10 s.
+export const maxDuration = 30
 
-const URL_N8N = process.env.N8N_CHAT_WEBHOOK_URL
-const TOKEN_N8N = process.env.N8N_CHAT_TOKEN
+const URL_N8N = process.env.N8N_DEMO_WEBHOOK_URL
+const URL_TOKEN = process.env.N8N_DEMO_TOKEN_URL
+const TOKEN_N8N = process.env.N8N_DEMO_TOKEN
 
-const LIMITE_MENSAJE = 500
-const LIMITE_HISTORIAL = 12
-const VENTANA_MS = 60_000
-const MAX_POR_VENTANA = 12
-const MAX_POR_SESION = 60
+const VENTANA_MS = 10 * 60_000
+const MAX_POR_VENTANA = 3
 
 const porIP = new Map<string, { conteo: number; reinicioEn: number }>()
-const porSesion = new Map<string, number>()
 
 function limpiar() {
   const ahora = Date.now()
@@ -31,55 +32,79 @@ function limpiar() {
     if (valor.reinicioEn < ahora) vencidas.push(clave)
   })
   vencidas.forEach((clave) => porIP.delete(clave))
-  if (porSesion.size > 5000) porSesion.clear()
 }
 
-function excedeRitmo(ip: string, sesion: string) {
+function excedeRitmo(ip: string) {
   limpiar()
   const ahora = Date.now()
-
   const registro = porIP.get(ip)
   if (!registro || registro.reinicioEn < ahora) {
     porIP.set(ip, { conteo: 1, reinicioEn: ahora + VENTANA_MS })
-  } else {
-    registro.conteo += 1
-    if (registro.conteo > MAX_POR_VENTANA) return 'ritmo'
+    return false
   }
-
-  const total = (porSesion.get(sesion) || 0) + 1
-  porSesion.set(sesion, total)
-  if (total > MAX_POR_SESION) return 'sesion'
-
-  return null
+  registro.conteo += 1
+  return registro.conteo > MAX_POR_VENTANA
 }
 
 function textoPlano(valor: unknown, largoMax: number) {
   if (typeof valor !== 'string') return ''
-  return valor.replace(/\u0000/g, '').trim().slice(0, largoMax)
+  return valor.replace(/\u0000/g, '').replace(/\s+/g, ' ').trim().slice(0, largoMax)
 }
 
-export async function POST(peticion: NextRequest) {
-  if (!URL_N8N) {
-    console.error('[chat] Falta la variable N8N_CHAT_WEBHOOK_URL')
-    return NextResponse.json(
-      { error: 'El asistente no está disponible en este momento.' },
-      { status: 503 }
-    )
-  }
+/** El telefono se guarda en E.164 porque es la llave con la que el agente
+ *  reconoce a quien llama. Sin esto, la demo saluda a un desconocido. */
+function aE164(crudo: string) {
+  const soloDigitos = String(crudo || '').replace(/[^\d+]/g, '')
+  if (!soloDigitos) return ''
+  if (soloDigitos.startsWith('+')) return soloDigitos
+  const d = soloDigitos.replace(/^0+/, '')
+  if (d.length === 10) return '+52' + d
+  if (d.startsWith('52') && d.length >= 12) return '+' + d
+  if (d.startsWith('1') && d.length === 11) return '+' + d
+  return '+52' + d
+}
 
-  let cuerpo: any
+const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+export async function POST(peticion: NextRequest) {
+  let cuerpo: unknown
   try {
     cuerpo = await peticion.json()
   } catch {
     return NextResponse.json({ error: 'Petición inválida.' }, { status: 400 })
   }
 
-  const sesion = textoPlano(cuerpo?.session_id, 64)
-  const tokenCliente = textoPlano(cuerpo?.token, 80)
-  const mensaje = textoPlano(cuerpo?.mensaje, LIMITE_MENSAJE)
+  const d = (cuerpo ?? {}) as Record<string, unknown>
 
-  if (!sesion || !mensaje) {
-    return NextResponse.json({ error: 'Petición incompleta.' }, { status: 400 })
+  // Trampa para bots: campo invisible. Si viene lleno, se responde como si
+  // todo hubiera salido bien y no se hace nada.
+  if (textoPlano(d.sitioWeb, 200)) {
+    return NextResponse.json({ ok: true, leadGuardado: true, sesion: 'ignorada' })
+  }
+
+  const datos = {
+    nombre: textoPlano(d.nombre, 80),
+    empresa: textoPlano(d.empresa, 100),
+    correo: textoPlano(d.correo, 120).toLowerCase(),
+    telefono: aE164(textoPlano(d.telefono, 25)),
+    nota: textoPlano(d.nota, 600),
+  }
+
+  const faltan = (['nombre', 'empresa', 'correo', 'telefono'] as const).filter((campo) => !datos[campo])
+  if (faltan.length) {
+    return NextResponse.json({ error: 'Faltan datos por llenar.', campos: faltan }, { status: 400 })
+  }
+  if (!CORREO.test(datos.correo)) {
+    return NextResponse.json({ error: 'El correo no parece válido.' }, { status: 400 })
+  }
+  if (datos.telefono.replace(/\D/g, '').length < 10) {
+    return NextResponse.json({ error: 'El teléfono no parece válido.' }, { status: 400 })
+  }
+  if (d.acepta !== true) {
+    return NextResponse.json(
+      { error: 'Necesitamos tu consentimiento para continuar.' },
+      { status: 400 }
+    )
   }
 
   const ip =
@@ -87,92 +112,124 @@ export async function POST(peticion: NextRequest) {
     peticion.headers.get('x-real-ip') ||
     'desconocida'
 
-  const exceso = excedeRitmo(ip, sesion)
-  if (exceso === 'ritmo') {
-    return NextResponse.json(
-      { error: 'Vas muy rápido. Espera un momento antes de escribir de nuevo.' },
-      { status: 429 }
-    )
-  }
-  if (exceso === 'sesion') {
+  const directo = esInterno(datos.correo)
+
+  // El límite por IP está para que nadie queme minutos de voz ni correos.
+  // El equipo no es esa amenaza y necesita poder probar cuantas veces quiera.
+  if (!directo && excedeRitmo(ip)) {
     return NextResponse.json(
       {
         error:
-          'Llegamos al límite de esta conversación. Escríbenos a comercial@markalab.com.mx y seguimos por ahí.',
+          'Ya probaste la demo hace poco. Si quieres verla otra vez, espera unos minutos o escríbenos a marketing@markalab.com.mx.',
       },
       { status: 429 }
     )
   }
 
-  const historial = Array.isArray(cuerpo?.historial)
-    ? cuerpo.historial
-        .slice(-LIMITE_HISTORIAL)
-        .map((m: any) => ({
-          rol: m?.rol === 'user' ? 'user' : 'assistant',
-          texto: textoPlano(m?.texto, LIMITE_MENSAJE),
-        }))
-        .filter((m: any) => m.texto)
-    : []
+  const sesion = `demo_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 
+  const payload = {
+    evento: 'demo_cold_caller',
+    sesion,
+    acceso: directo ? 'directo' : 'por_token',
+    ...datos,
+    ip,
+    pagina: textoPlano(d.pagina, 120) || '/demo',
+    user_agent: peticion.headers.get('user-agent')?.slice(0, 200) || '',
+    referer: peticion.headers.get('referer')?.slice(0, 200) || '',
+    enviado_en: new Date().toISOString(),
+  }
+
+  // Un reintento. Si n8n esta caido, el visitante igual recibe el numero,
+  // pero queda avisado en los logs. Perder el lead en silencio seria peor.
+  let leadGuardado = false
+  if (!URL_N8N) {
+    console.error('[demo] Falta la variable N8N_DEMO_WEBHOOK_URL')
+  } else {
+    for (let intento = 1; intento <= 2 && !leadGuardado; intento++) {
+      try {
+        const controlador = new AbortController()
+        const limite = setTimeout(() => controlador.abort(), 12_000)
+        const respuestaN8N = await fetch(URL_N8N, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(TOKEN_N8N ? { 'x-markalab-token': TOKEN_N8N } : {}),
+          },
+          body: JSON.stringify(payload),
+          signal: controlador.signal,
+        })
+        clearTimeout(limite)
+        if (respuestaN8N.ok) leadGuardado = true
+        else console.error('[demo] n8n respondió', respuestaN8N.status, 'intento', intento)
+      } catch (e) {
+        console.error('[demo] Error al avisar a n8n, intento', intento, e)
+      }
+    }
+  }
+
+  if (!leadGuardado) {
+    console.error('[demo] LEAD SIN GUARDAR, recupéralo de este log:', JSON.stringify(payload))
+  }
+
+  const seguro = process.env.NODE_ENV === 'production'
+  const base = { sameSite: 'lax' as const, secure: seguro, path: '/', maxAge: 60 * 60 * 3 }
+
+  // --- Alguien de la casa: entra sin verificar ---
+  if (directo) {
+    const respuesta = NextResponse.json({ ok: true, leadGuardado, sesion, acceso: 'directo' })
+    respuesta.cookies.set('ml_demo', sesion, { ...base, httpOnly: true })
+    const publica = { ...base, httpOnly: false }
+    respuesta.cookies.set('ml_demo_id', sesion, publica)
+    respuesta.cookies.set('ml_demo_nombre', encodeURIComponent(datos.nombre.split(' ')[0]), publica)
+    respuesta.cookies.set('ml_demo_empresa', encodeURIComponent(datos.empresa), publica)
+    respuesta.cookies.set('ml_demo_nota', encodeURIComponent(datos.nota.slice(0, 300)), publica)
+    return respuesta
+  }
+
+  // --- Alguien de fuera: se le manda un código al correo ---
+  if (!URL_TOKEN) {
+    console.error('[demo] Falta N8N_DEMO_TOKEN_URL')
+    return NextResponse.json(
+      { error: 'No pudimos enviarte el código. Escríbenos a marketing@markalab.com.mx.' },
+      { status: 502 }
+    )
+  }
+
+  const codigo = nuevoCodigo()
   try {
     const controlador = new AbortController()
-    const limite = setTimeout(() => controlador.abort(), 50_000)
-
-    const respuesta = await fetch(URL_N8N, {
+    const limite = setTimeout(() => controlador.abort(), 12_000)
+    const r = await fetch(URL_TOKEN, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(TOKEN_N8N ? { 'x-markalab-token': TOKEN_N8N } : {}),
       },
       body: JSON.stringify({
-        session_id: sesion,
-        mensaje,
-        token: tokenCliente,
-        historial,
-        pagina: textoPlano(cuerpo?.pagina, 120),
-        ip,
-        user_agent: peticion.headers.get('user-agent')?.slice(0, 200) || '',
-        enviado_en: new Date().toISOString(),
+        accion: 'crear', sesion, codigo,
+        token_hash: huella(codigo, sesion),
+        minutos: MINUTOS_VIGENCIA, ip, ...datos,
       }),
       signal: controlador.signal,
     })
-
     clearTimeout(limite)
-
-    if (!respuesta.ok) {
-      console.error('[chat] n8n respondió', respuesta.status)
-      return NextResponse.json(
-        { error: 'El asistente no pudo responder. Intenta de nuevo.' },
-        { status: 502 }
-      )
-    }
-
-    const datos = await respuesta.json()
-
-    const mensajes: string[] = Array.isArray(datos?.mensajes)
-      ? datos.mensajes.filter((t: unknown) => typeof t === 'string' && t.trim()).slice(0, 3)
-      : typeof datos?.mensaje === 'string'
-        ? [datos.mensaje]
-        : []
-
-    if (!mensajes.length) {
-      return NextResponse.json(
-        { error: 'El asistente no pudo responder. Intenta de nuevo.' },
-        { status: 502 }
-      )
-    }
-
-    return NextResponse.json({ mensajes, rol: datos?.rol === 'cliente' ? 'cliente' : 'prospecto' })
+    if (!r.ok) throw new Error('n8n respondió ' + r.status)
   } catch (e) {
-    const abortado = e instanceof DOMException && e.name === 'AbortError'
-    console.error('[chat] Error al llamar a n8n:', e)
+    console.error('[demo] No se pudo enviar el código:', e)
     return NextResponse.json(
-      {
-        error: abortado
-          ? 'La respuesta tardó demasiado.'
-          : 'No pudimos conectar con el asistente.',
-      },
-      { status: abortado ? 504 : 502 }
+      { error: 'No pudimos enviarte el código. Intenta de nuevo en un momento.' },
+      { status: 502 }
     )
   }
+
+  const respuesta = NextResponse.json({
+    ok: true, leadGuardado, sesion, acceso: 'por_token',
+    correo: datos.correo, minutos: MINUTOS_VIGENCIA,
+  })
+  // Esta cookie solo dice "hay una verificación en curso": no abre la demo
+  respuesta.cookies.set('ml_demo_pend', sesion, {
+    ...base, httpOnly: true, maxAge: 60 * (MINUTOS_VIGENCIA + 5),
+  })
+  return respuesta
 }
