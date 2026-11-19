@@ -205,7 +205,7 @@ export default function KalaRetell({ llamada, alTerminar, titulo = 'Llamada con 
 
       <div className="flex flex-col items-center">
         <div ref={anillo} className={`kala-rt-anillo kala-rt-${estado} relative grid h-44 w-44 place-items-center rounded-full`}>
-          <div className="h-36 w-36"><Kala detallada idClip="kalaClipRetell" /></div>
+          <div className="grid h-36 w-36 place-items-center"><Kala detallada className="w-full" /></div>
         </div>
         <p className="mt-6 min-h-[1.5rem] text-base font-semibold" aria-live="polite">{aviso || TEXTO[estado]}</p>
         <p className="mt-2 line-clamp-3 min-h-[3.75rem] max-w-[18rem] text-center text-sm text-white/60">{subtitulo}</p>

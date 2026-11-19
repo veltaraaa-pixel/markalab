@@ -24,6 +24,7 @@ src/                     el sitio (lo único que compila Vercel)
 public/
   logo-markalab.png        logo para fondos claros
   logo-markalab-claro.png  logo para fondos oscuros
+  kala/                    avatar de Kala: cabeza (icono) y cuerpo completo (chat abierto)
   talleres/                landing de Talleres YA COMPILADA (no se edita a mano)
 landings/
   talleres/                código fuente de la landing de Talleres (proyecto aparte, Next 16)
@@ -62,3 +63,12 @@ Todas están explicadas en `.env.example` (qué hace cada una y qué workflow de
 Vercel Web Analytics: `<Analytics />` en `src/app/layout.tsx` y el script
 `/_vercel/insights/script.js` dentro de la landing de Talleres. Se activa en
 Vercel → proyecto → pestaña Analytics → Enable.
+
+## Avatar de Kala
+
+`src/components/chat/KalaAvatar.tsx` arma el avatar con las imágenes de `public/kala/`:
+la **cabeza** es el icono flotante (chat cerrado) y el **cuerpo completo** aparece al abrir el chat
+(junto al panel en escritorio, arriba de la conversación en celular). La cara dentro del visor sigue
+el cursor, parpadea y las luces de las orejas pulsan. Las posiciones del visor y los ojos están en
+porcentaje dentro del archivo: si cambias las imágenes, ajusta esos números. Estilos en
+`src/app/globals.css` (bloque "Kala · avatar"). Respeta "reducir movimiento" del sistema.

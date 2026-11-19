@@ -13,6 +13,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* evita el scroll lateral en celular cuando una animación entra desde fuera de la pantalla */
+  overflow-x: clip;
 }
 
 body {
@@ -21,6 +23,7 @@ body {
   color: #1E2A4A;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
 }
 
 /* Scrollbar personalizada */
@@ -142,4 +145,74 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .it-marquee, .it-marquee-rev, .it-border-anim::after, .it-caret { animation: none !important; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Kala · avatar (ver src/components/chat/KalaAvatar.tsx)             */
+/* ------------------------------------------------------------------ */
+.kala-fig { --kx: 0; --ky: 0; }
+.kala-giro {
+  transform-origin: 50% 92%;
+  transform: rotate(calc(var(--kx) * var(--kgiro)));
+  transition: transform .55s cubic-bezier(.2, .8, .3, 1);
+}
+.kala-mirada {
+  transform: translate(calc(var(--kx) * var(--kamp)), calc(var(--ky) * var(--kamp) * .75));
+  transition: transform .35s cubic-bezier(.2, .8, .3, 1);
+  will-change: transform;
+}
+.kala-reflejo {
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transform: translate(calc(var(--kx) * var(--kamp) * -1.4), calc(var(--ky) * var(--kamp) * -1));
+  transition: transform .6s ease-out;
+}
+.kala-parpado {
+  border-radius: 50% 50% 46% 46%;
+  background: #E6D5CB;
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  animation: kala-parpadeo 6.2s infinite 1.8s;
+}
+.kala-parpado::after {
+  content: '';
+  position: absolute;
+  left: 5%; right: 5%; bottom: 10%;
+  height: 13%;
+  border-radius: 50%;
+  background: #3B2420;
+}
+@keyframes kala-parpadeo {
+  0%, 93%, 100% { transform: scaleY(0); }
+  95% { transform: scaleY(1); }
+  97.5% { transform: scaleY(0); }
+}
+.kala-luz {
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(closest-side, rgba(150, 238, 255, .95), rgba(70, 200, 255, .35) 60%, transparent);
+  opacity: .15;
+  animation: kala-luz 3.4s ease-in-out infinite;
+}
+@keyframes kala-luz { 50% { opacity: .8; } }
+
+.kala-flota { animation: kala-flota 4.2s ease-in-out infinite; }
+@keyframes kala-flota { 50% { transform: translateY(-3px); } }
+.kala-flota-lenta { animation: kala-flota-lenta 5.5s ease-in-out infinite; }
+@keyframes kala-flota-lenta { 50% { transform: translateY(-7px); } }
+.kala-sombra { animation: kala-sombra 5.5s ease-in-out infinite; }
+@keyframes kala-sombra { 50% { transform: scaleX(.86); opacity: .7; } }
+
+.kala-asomando .kala-fig { animation: kala-asomar 1.5s cubic-bezier(.34, 1.3, .5, 1); }
+@keyframes kala-asomar {
+  0%, 100% { transform: rotate(0) translateY(0); }
+  25% { transform: rotate(-8deg) translateY(-6px); }
+  60% { transform: rotate(6deg) translateY(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kala-parpado, .kala-luz, .kala-flota, .kala-flota-lenta, .kala-sombra,
+  .kala-asomando .kala-fig { animation: none; }
+  .kala-giro, .kala-mirada, .kala-reflejo { transition: none; }
 }

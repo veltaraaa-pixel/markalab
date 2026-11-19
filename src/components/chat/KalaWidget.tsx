@@ -69,7 +69,8 @@ export default function KalaWidget() {
   const hilo = useRef<HTMLDivElement>(null)
   const campo = useRef<HTMLTextAreaElement>(null)
   const boton = useRef<HTMLButtonElement>(null)
-  const ojos = useRef<SVGGElement>(null)
+  const ojos = useRef<HTMLDivElement>(null)      // cabeza (chat cerrado)
+  const cuerpo = useRef<HTMLDivElement>(null)    // cuerpo completo (chat abierto)
 
   const historial = useRef<Turno[]>([])
   const interactuo = useRef(false)
@@ -117,24 +118,48 @@ export default function KalaWidget() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  /* --- los ojos siguen el cursor --- */
+  /* --- Kala sigue el cursor ---
+     Cerrado: la cabeza. Abierto: el cuerpo completo (escritorio).
+     Se escriben --kx / --ky (-1..1) y el CSS hace el resto. */
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     if (!window.matchMedia('(pointer:fine)').matches) return
 
-    const mover = (e: MouseEvent) => {
-      if (abierto || !boton.current || !ojos.current) return
-      const c = boton.current.getBoundingClientRect()
-      const dx = e.clientX - (c.left + c.width / 2)
-      const dy = e.clientY - (c.top + c.height / 2)
-      const d = Math.hypot(dx, dy) || 1
-      const t = (Math.min(d, 260) / 260) * 3.2
-      ojos.current.style.transform =
-        `translate(${(dx / d * t).toFixed(2)}px, ${(dy / d * t * 0.7).toFixed(2)}px)`
+    let cuadro = 0
+    let ultimo: MouseEvent | null = null
+    const fijar = (fig: HTMLDivElement | null, x: number, y: number) => {
+      if (!fig) return
+      fig.style.setProperty('--kx', x.toFixed(3))
+      fig.style.setProperty('--ky', y.toFixed(3))
     }
+    const pintar = () => {
+      cuadro = 0
+      const e = ultimo
+      const fig = abierto ? cuerpo.current : ojos.current
+      if (!e || !fig) return
+      const c = fig.getBoundingClientRect()
+      if (!c.width) return
+      // punto de referencia: el centro del visor
+      const dx = e.clientX - (c.left + c.width * (abierto ? 0.43 : 0.5))
+      const dy = e.clientY - (c.top + c.height * (abierto ? 0.21 : 0.56))
+      const d = Math.hypot(dx, dy) || 1
+      const t = Math.min(d, 340) / 340
+      fijar(fig, (dx / d) * t, (dy / d) * t)
+    }
+    const mover = (e: MouseEvent) => {
+      ultimo = e
+      if (!cuadro) cuadro = requestAnimationFrame(pintar)
+    }
+    const salir = () => { fijar(ojos.current, 0, 0); fijar(cuerpo.current, 0, 0) }
+
     window.addEventListener('mousemove', mover, { passive: true })
-    return () => window.removeEventListener('mousemove', mover)
+    document.documentElement.addEventListener('mouseleave', salir)
+    return () => {
+      cancelAnimationFrame(cuadro)
+      window.removeEventListener('mousemove', mover)
+      document.documentElement.removeEventListener('mouseleave', salir)
+    }
   }, [abierto])
 
   useEffect(() => {
@@ -272,7 +297,8 @@ export default function KalaWidget() {
       const nuevo = !prev
       setMostrando(false); setPendiente(false)
       if (nuevo) {
-        if (ojos.current) ojos.current.style.transform = ''
+        ojos.current?.style.setProperty('--kx', '0')
+        ojos.current?.style.setProperty('--ky', '0')
         if (!arrancado.current) {
           arrancado.current = true
           pintarSecuencia(SALUDO)
@@ -317,7 +343,7 @@ export default function KalaWidget() {
         ].join(' ')}
       >
         <div className="flex shrink-0 items-center gap-3 bg-[#1E2A4A] px-5 py-4 pt-[calc(1rem+env(safe-area-inset-top,0px))]">
-          <div className="h-10 w-10 shrink-0"><Kala /></div>
+          <Kala className="w-12 shrink-0" />
           <div className="min-w-0">
             <h2 id="kala-titulo" className="m-0 text-base font-bold tracking-tight text-white">Kala</h2>
             <p className="m-0 mt-0.5 flex items-center gap-1.5 text-xs text-white/60">
@@ -336,6 +362,10 @@ export default function KalaWidget() {
           ref={hilo} role="log" aria-live="polite" aria-relevant="additions"
           className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto bg-[#F0EBE3] p-5 [overscroll-behavior:contain]"
         >
+          {/* en pantallas chicas el cuerpo completo vive dentro del chat */}
+          <div className="kala-flota-lenta mx-auto mb-1 w-28 shrink-0 lg:hidden [@media(max-height:600px)]:w-20">
+            <Kala cuerpo detallada />
+          </div>
           {mensajes.map((m) => (
             <div
               key={m.id}
@@ -430,6 +460,24 @@ export default function KalaWidget() {
         </div>
       </div>
 
+      {/* ---------- Kala de cuerpo completo (escritorio, chat abierto) ---------- */}
+      <div
+        aria-hidden="true"
+        className={[
+          'pointer-events-none fixed bottom-[6.5rem] right-[25.25rem] z-[59] hidden w-[16.5rem] lg:block',
+          '[@media(max-height:640px)]:!hidden',
+          'transition-[opacity,transform] ease-out',
+          abierto ? 'translate-x-0 scale-100 opacity-100 delay-150 duration-500'
+                  : 'translate-x-8 scale-95 opacity-0 duration-200',
+        ].join(' ')}
+        style={{ transformOrigin: '100% 100%' }}
+      >
+        <div className="kala-flota-lenta">
+          <Kala cuerpo detallada ojosRef={cuerpo} />
+        </div>
+        <div className="kala-sombra mx-auto -mt-1 h-3 w-1/2 rounded-[50%] bg-[#1E2A4A]/25 blur-md" />
+      </div>
+
       {/* ---------- botón ---------- */}
       <div
         className={[
@@ -461,44 +509,46 @@ export default function KalaWidget() {
           aria-expanded={abierto}
           aria-label={abierto ? 'Cerrar el chat con Kala' : 'Abrir el chat con Kala'}
           className={[
-            'relative h-[66px] w-[66px] shrink-0 rounded-full transition-transform duration-300',
+            'relative h-[68px] w-[86px] shrink-0 rounded-2xl transition-transform duration-300',
             'hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-[#E8621A]',
             asomando ? 'kala-asomando' : '',
           ].join(' ')}
         >
           <span
             className={[
-              'absolute right-0.5 top-0.5 z-10 h-[15px] w-[15px] rounded-full border-[2.5px] border-[#F0EBE3] bg-[#E8621A] transition-[opacity,transform] duration-300',
+              'absolute right-1 top-0 z-10 h-[15px] w-[15px] rounded-full border-[2.5px] border-[#F0EBE3] bg-[#E8621A] transition-[opacity,transform] duration-300',
               pendiente && !abierto ? 'scale-100 opacity-100' : 'scale-0 opacity-0',
             ].join(' ')}
             aria-hidden="true"
           />
-          <span className="block h-full w-full drop-shadow-[0_8px_20px_rgba(30,42,74,0.28)]">
-            <Kala detallada ojosRef={ojos} />
+          {/* chat cerrado: la cabeza de Kala */}
+          <span
+            className={[
+              'absolute inset-0 flex items-end transition-[opacity,transform] duration-300 ease-out',
+              abierto ? 'pointer-events-none scale-50 opacity-0' : 'scale-100 opacity-100',
+            ].join(' ')}
+          >
+            <span className="kala-flota block w-full drop-shadow-[0_10px_16px_rgba(30,42,74,0.35)]">
+              <Kala detallada prioridad ojosRef={ojos} />
+            </span>
+          </span>
+          {/* chat abierto: cerrar */}
+          <span
+            aria-hidden="true"
+            className={[
+              'absolute bottom-0.5 right-0.5 grid h-14 w-14 place-items-center rounded-full bg-[#1E2A4A] text-white',
+              'shadow-[0_10px_26px_rgba(30,42,74,0.3)] transition-[opacity,transform] duration-300 ease-out',
+              abierto ? 'rotate-0 scale-100 opacity-100' : 'pointer-events-none -rotate-90 scale-50 opacity-0',
+            ].join(' ')}
+          >
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
           </span>
         </button>
       </div>
 
       <style jsx global>{`
-        .kala-anillo{
-          stroke-dasharray:597; stroke-dashoffset:597;
-          transform:rotate(-90deg); transform-origin:100px 100px;
-          animation:kala-trazo .85s cubic-bezier(.4,0,.2,1) .15s forwards;
-        }
-        @keyframes kala-trazo{ to{ stroke-dashoffset:0 } }
-
-        .kala-ojo{ transform-origin:center; transform-box:fill-box; animation:kala-blink 6.4s infinite }
-        .kala-ojo-der{ animation-delay:.06s }
-        @keyframes kala-blink{ 0%,92%,100%{transform:scaleY(1)} 94%,96%{transform:scaleY(.12)} }
-
-        .kala-cara{ transform-origin:100px 150px }
-        .kala-asomando .kala-cara{ animation:kala-asomar 1.5s cubic-bezier(.34,1.3,.5,1) }
-        @keyframes kala-asomar{
-          0%,100%{transform:rotate(0) translateY(0)}
-          25%{transform:rotate(-7deg) translateY(-5px)}
-          60%{transform:rotate(5deg) translateY(-2px)}
-        }
-
         .kala-globo{ animation:kala-entra .3s cubic-bezier(.2,.9,.3,1) }
         @keyframes kala-entra{ from{opacity:0;transform:translateY(7px)} }
 
@@ -511,8 +561,7 @@ export default function KalaWidget() {
         .kala-saludo:hover .kala-x, .kala-x:focus-visible{ opacity:1 }
 
         @media (prefers-reduced-motion:reduce){
-          .kala-anillo{ stroke-dashoffset:0; animation:none }
-          .kala-ojo,.kala-cara,.kala-globo,.kala-pt{ animation:none }
+          .kala-globo,.kala-pt{ animation:none }
         }
       `}</style>
     </>
