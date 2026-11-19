@@ -1,0 +1,3 @@
+# Ambiente de demostración. No debe indexarse.
+User-agent: *
+Disallow: /
