@@ -1,0 +1,403 @@
+@import 'tailwindcss';
+
+/*
+ * globals.css · v1.0
+ * Paleta y tipografía del taller. Los tokens viven en @theme para que
+ * Tailwind genere las utilidades (bg-ink, text-amber, font-display…).
+ */
+@theme {
+  --color-ink: #07090c;
+  --color-floor: #0e131a;
+  --color-panel: #10161e;
+  --color-line: #232b36;
+  --color-fg: #eaeff5;
+  --color-muted: #9aa6b5;
+  --color-dim: #5e6b7b;
+  --color-amber: #e8621a;
+  --color-amber-hot: #ff8a3d;
+  --color-ok: #2fb184;
+
+  --font-display: var(--font-archivo), 'Arial Black', system-ui, sans-serif;
+  --font-sans: var(--font-archivo), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-jet), ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  background: var(--color-ink);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+::selection {
+  background: var(--color-amber);
+  color: #0b0b0b;
+}
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ---------- Tipografía ---------- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 118%;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Lienzo ---------- */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.scene:active {
+  cursor: grabbing;
+}
+.scene canvas {
+  display: block;
+}
+/* Sin WebGL: un fondo que sigue pareciendo taller. */
+.scene-fallback {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(60% 45% at 60% 62%, rgba(232, 98, 26, 0.14), transparent 70%),
+    linear-gradient(180deg, #07090c 0%, #0b1016 60%, #07090c 100%);
+}
+
+/* ---------- Capas de contenido ---------- */
+.stage {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+.stage-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+}
+.stage-in {
+  pointer-events: none;
+  width: 100%;
+  display: flex;
+  will-change: transform, opacity;
+}
+.stage-in > * {
+  pointer-events: auto;
+}
+
+/* Bloque de texto: un velo detrás para que se lea encima del coche. */
+.copy {
+  position: relative;
+}
+.copy::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -90px -60px -60px;
+  background: radial-gradient(closest-side, rgba(7, 9, 12, 0.72), rgba(7, 9, 12, 0));
+  pointer-events: none;
+}
+@media (max-width: 1023px) {
+  .copy::before {
+    inset: -70px -40px -40px;
+    background: linear-gradient(to top, rgba(7, 9, 12, 0.94) 55%, rgba(7, 9, 12, 0));
+  }
+}
+
+/* ---------- Puntos sobre el coche ----------
+   El elemento exterior solo se mueve (lo coloca la escena con transform).
+   Todo lo visual va en el hijo, para no pisar esa transformación. */
+.hotspot,
+.finding {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.hotspot {
+  cursor: pointer;
+}
+.hotspot-in {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transform: translate(-15px, -15px) scale(0.5);
+  transform-origin: 15px 15px;
+  opacity: 0;
+  transition:
+    opacity 0.5s var(--ease-out-expo),
+    transform 0.5s var(--ease-out-expo);
+}
+.hotspot[data-on='true'] .hotspot-in {
+  opacity: 1;
+  transform: translate(-15px, -15px) scale(1);
+}
+.hotspot-dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 99px;
+  border: 1.5px solid var(--color-amber);
+  background: rgba(7, 9, 12, 0.72);
+  backdrop-filter: blur(6px);
+  color: var(--color-amber-hot);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    transform 0.3s var(--ease-out-expo);
+}
+.hotspot-dot::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1.5px solid var(--color-amber);
+  animation: ping 2.4s var(--ease-out-expo) infinite;
+}
+.hotspot[data-active='true'] .hotspot-dot {
+  background: var(--color-amber);
+  color: #0b0b0b;
+  transform: scale(1.12);
+}
+.hotspot-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: rgba(7, 9, 12, 0.82);
+  border: 1px solid var(--color-line);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.3s,
+    transform 0.3s var(--ease-out-expo);
+  pointer-events: none;
+}
+.hotspot[data-active='true'] .hotspot-label {
+  opacity: 1;
+  transform: none;
+}
+
+.finding {
+  pointer-events: none;
+}
+.finding-in {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  transform: translate(-5px, -50%);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.finding[data-on='true'] .finding-in {
+  opacity: 1;
+  transition-delay: 0.5s;
+}
+.finding-ping {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 99px;
+  background: var(--color-amber-hot);
+}
+.finding-ping::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid var(--color-amber-hot);
+  animation: ping 1.8s var(--ease-out-expo) infinite;
+}
+.finding-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fg);
+  padding: 5px 9px;
+  border: 1px solid var(--color-amber);
+  background: rgba(7, 9, 12, 0.78);
+  backdrop-filter: blur(6px);
+}
+.finding-tag b {
+  color: var(--color-amber-hot);
+  font-weight: 500;
+}
+
+@keyframes ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.3);
+    opacity: 0;
+  }
+}
+
+/* En pantallas angostas la lista de soluciones ya dice el nombre: sobre el
+   coche basta el número. */
+@media (max-width: 859px) {
+  .hotspot-label {
+    display: none;
+  }
+}
+
+/* ---------- Teléfono del simulador ----------
+   Su alto depende del alto de pantalla: en móvil cede espacio al coche. */
+.phone {
+  height: min(440px, calc(100svh - 350px));
+  min-height: 280px;
+}
+@media (max-width: 1023px) {
+  .phone {
+    height: min(400px, calc(100svh - 455px));
+    min-height: 250px;
+  }
+}
+
+/* ---------- Deslizador del calculador ---------- */
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  cursor: ew-resize;
+}
+.range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-amber) var(--fill, 50%), var(--color-line) var(--fill, 50%));
+}
+.range::-moz-range-track {
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-amber) var(--fill, 50%), var(--color-line) var(--fill, 50%));
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -10px;
+  border-radius: 99px;
+  background: var(--color-ink);
+  border: 2px solid var(--color-amber);
+  box-shadow: 0 0 0 6px rgba(232, 98, 26, 0.16);
+  transition: box-shadow 0.2s;
+}
+.range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 99px;
+  background: var(--color-ink);
+  border: 2px solid var(--color-amber);
+  box-shadow: 0 0 0 6px rgba(232, 98, 26, 0.16);
+}
+.range:active::-webkit-slider-thumb {
+  box-shadow: 0 0 0 10px rgba(232, 98, 26, 0.22);
+}
+
+/* ---------- Franja de seguridad ---------- */
+.hazard {
+  background: repeating-linear-gradient(135deg, var(--color-amber) 0 10px, transparent 10px 20px);
+}
+
+/* ---------- Campos del formulario ---------- */
+.field {
+  position: relative;
+  display: block;
+}
+.field input {
+  width: 100%;
+  background: rgba(14, 19, 26, 0.72);
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  padding: 21px 14px 8px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--color-fg);
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.field input:focus {
+  outline: none;
+  border-color: var(--color-amber);
+  background: rgba(14, 19, 26, 0.92);
+}
+.field span {
+  position: absolute;
+  left: 14px;
+  top: 15px;
+  font-size: 14px;
+  color: var(--color-dim);
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 0.2s var(--ease-out-expo);
+}
+.field input:focus + span,
+.field input:not(:placeholder-shown) + span {
+  transform: translateY(-9px) scale(0.74);
+}
+.field input[aria-invalid='true'] {
+  border-color: #d2463a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
